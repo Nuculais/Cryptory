@@ -1,10 +1,13 @@
 <% if (!user) { %>
-	<p>Welcome! Please <a href="/login">log in  asdf</a>.</p>
+<p>Welcome! Please <a href="/login">log in asdf</a>.</p>
 <% } else { %>
-	<p>Hello, <%= user.name %>. View your <a href="/profile">profile</a>.</p>
-<% } %>
+<p>Hello, <%= user.name %>. View your <a href="/profile">profile</a>.</p>
 <script>
-  var user= '<%= user.name%>';
+  const user = {
+    name: '<%= user.name %>'
+  };
 </script>
 <div id="app"></div>
 <script src="./app.bundle.js"></script>
+<% } %>
+
