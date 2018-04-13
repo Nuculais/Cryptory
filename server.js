@@ -7,8 +7,8 @@ const webpackHotMiddleware = require("webpack-hot-middleware");
 const User = require('./model/User')
 const mongoose = require('mongoose')
 mongoose.set('debug', true);
-// const db = mongoose.connect('mongodb://mongo:27017');
-const db = mongoose.connect('mongodb://127.0.0.1:27017/mydb');
+const db = mongoose.connect('mongodb://mongo:27017/cryptory');
+// const db = mongoose.connect('mongodb://127.0.0.1:27017/mydb');
 
 // logging
 mongoose.Promise = global.Promise;
