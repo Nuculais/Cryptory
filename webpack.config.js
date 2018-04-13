@@ -5,14 +5,17 @@ const webpack = require('webpack');
 
 module.exports = {
   entry: {
-    app: ['./src/index.js','webpack-hot-middleware/client',  'react-hot-loader/patch']
+    app: ['./src/index.jsx', 'webpack-hot-middleware/client', 'react-hot-loader/patch'],
+    // profile: ['./views/profile.js','webpack-hot-middleware/client',  'react-hot-loader/patch'],
+    // misc: ['./views/misc.js','webpack-hot-middleware/client',  'react-hot-loader/patch']
   },
   devtool: 'inline-source-map',
   plugins: [
     new CleanWebpackPlugin(['dist']),
     new HtmlWebpackPlugin({
       title: 'Output Management',
-      template: './src/index.html'
+      template: '!!raw-loader!./views/home.ejs'
+       // template: './src/index.html'
     }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin()
@@ -25,7 +28,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.jsx$/,
         include: /src/,
         exclude: /node_modules/,
         loader: "babel-loader",
