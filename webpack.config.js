@@ -6,7 +6,7 @@ const webpack = require('webpack');
 module.exports = {
   entry: {
     app: ['./src/index.jsx', 'webpack-hot-middleware/client', 'react-hot-loader/patch'],
-    // profile: ['./views/profile.js','webpack-hot-middleware/client',  'react-hot-loader/patch'],
+    welcome: ['./src/views/welcome.jsx','webpack-hot-middleware/client',  'react-hot-loader/patch'],
     // misc: ['./views/misc.js','webpack-hot-middleware/client',  'react-hot-loader/patch']
   },
   devtool: 'inline-source-map',

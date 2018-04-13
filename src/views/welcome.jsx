@@ -3,27 +3,24 @@ import {render} from 'react-dom';
 import {AppContainer} from 'react-hot-loader';
 // import DefaultLayout from './layouts/default.jsx'
 
-class HelloMessage extends React.Component {
+class Welcome extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      user: user.data,
     };
   }
 
   render() {
-    let curUser = JSON.parse(this.state.user);
-    console.log(curUser)
     return (
-      <div>Hello test react {curUser.name} </div>
+      <div>Welcome React</div>
     );
   }
 }
 
 render(
   <AppContainer>
-    <HelloMessage/>
+    <Welcome/>
   </AppContainer>,
-  document.getElementById('app'));
+  document.getElementById('welcome'));
 
 module.hot.accept();
