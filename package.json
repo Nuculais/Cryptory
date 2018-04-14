@@ -30,9 +30,12 @@
     "react": "^16.3.1",
     "react-dom": "^16.3.1",
     "react-hot-loader": "^4.0.1",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
     "serve-static": "^1.13.2",
     "webpack": "^4.5.0",
     "webpack-dev-middleware": "^3.1.2",
     "webpack-hot-middleware": "^2.21.2"
-  }
+  },
+  "devDependencies": {}
 }
