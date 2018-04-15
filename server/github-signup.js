@@ -18,12 +18,17 @@ module.exports = new Strategy({
 
     const updates = {
       name: profile.displayName,
+      username: profile.username,
       someId: profile.id,
       email: profile.username + '@github.com'
     };
 
+    const options = {
+      upsert: true
+    };
+
     // update the User if s/he exists or add a new User
-    User.findOneAndUpdate(searchQuery, updates, function (err, user) {
+    User.findOneAndUpdate(searchQuery, updates, options, function (err, user) {
       if (err) {
         console.log(err);  // handle errors!
       }

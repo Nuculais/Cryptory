@@ -8,14 +8,15 @@ module.exports = {
     app: ['./src/App.jsx', 'webpack-hot-middleware/client', 'react-hot-loader/patch'],
     welcome: ['./src/views/Welcome/Welcome.jsx', 'webpack-hot-middleware/client',],
     home: ['./src/views/Home/Home.jsx', 'webpack-hot-middleware/client'],
-    profile: ['./src/views/Profile/Profile.jsx', 'webpack-hot-middleware/client']
+    profile: ['./src/views/Profile/Profile.jsx', 'webpack-hot-middleware/client'],
+    vendor: ['react', 'react-dom', 'react-router'],
   }
   ,
   devtool: 'inline-source-map',
   plugins: [
     new CleanWebpackPlugin(['dist']),
     new HtmlWebpackPlugin({
-      title: 'Output Management',
+      title: 'Cryptory',
       template: '!!raw-loader!./views/home.ejs'
     }),
     new webpack.HotModuleReplacementPlugin(),
