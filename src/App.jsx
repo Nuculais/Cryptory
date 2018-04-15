@@ -19,15 +19,11 @@ class App extends Component {
   //  <Route exact path="/" render={() => <Welcome/>}/>}
 
   render() {
-    // console.log('app data', curUser)
     return (
       <div className="App">
         <header className="App-header">
           <h1 className="App-title container-fluid">{this.state.title}</h1>
-          {this.state.user ?
-            <Home data={JSON.parse(this.state.user)}/>
-            :
-            <Welcome/>}
+            <Welcome/>
         </header>
       </div>
     )

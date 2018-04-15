@@ -27,6 +27,10 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+  avatar: {
+    type: String,
+    default: ''
+  },
   github: String,
   profile: {
     name: {type: String, default: ''},

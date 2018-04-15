@@ -11,24 +11,19 @@ module.exports = new Strategy({
     callbackURL: 'http://localhost:3000/login/github/return'
   },
   function (accessToken, refreshToken, profile, done) {
-
     const searchQuery = {
-      name: profile.someId
+      username: profile.username
     };
-
     const updates = {
       name: profile.displayName,
       username: profile.username,
       someId: profile.id,
-      email: profile.username + '@github.com'
+      email: profile.username + '@github.com',
+      avatar: profile.photos[0].value,
+      following: ['BTC','ETH','ALT']
     };
-
-    const options = {
-      upsert: true
-    };
-
     // update the User if s/he exists or add a new User
-    User.findOneAndUpdate(searchQuery, updates, options, function (err, user) {
+    User.findOneAndUpdate(searchQuery, updates, function (err, user) {
       if (err) {
         console.log(err);  // handle errors!
       }

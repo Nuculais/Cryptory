@@ -1,28 +1,27 @@
 import React from 'react';
-import {render} from 'react-dom';
-import {AppContainer} from 'react-hot-loader';
+import {Link} from 'react-router-dom';
+import {render} from "react-dom";
 
 // import DefaultLayout from './layouts/default.jsx'
 
-export default class Profile extends React.Component {
+class Profile extends React.Component {
   constructor(props) {
     super(props)
-
+    this.state = {
+      title: 'Cryptory Profile',
+      status: 'INITIAL',
+      user: ''
+    };
   }
 
-
-  handleSubmit(user) {
-    fetch(`api/user/:${user}`).then(response => {
+  loadData() {
+    fetch(`api/user/${user.data}`).then(response => {
       if (response.ok) {
         response.json().then(data => {
-          console.log(data)
-          // console.log("Total count of records:", data._metadata.total_count);
-          // data.records.forEach(issue => {
-          //   issue.created = new Date(issue.created);
-          //   if (issue.completionDate)
-          //     issue.completionDate = new Date(issue.completionDate);
-          // });
-          // this.setState({issues: data.records});
+          this.setState({
+            status: 'LOADED',
+            user: data
+          });
         });
       } else {
         response.json().then(error => {
@@ -34,40 +33,47 @@ export default class Profile extends React.Component {
     });
   }
 
-
-  // handleSubmit(event) {
-  //   let data = 'longsgtringasdfasdfasdfdsafasdfasfsad'
-  //   // console.log(data)
-  //   event.preventDefault();
-  //   // let headers = new Headers();
-  //   // headers.append('Content-Type', 'application/json');
-  //   // return this.http.post('/update',data,
-  //   //   {headers:headers})
-  //   //   .map(res => res.json());
-  //   fetch('/update', {
-  //     method: 'post',
-  //     headers: {
-  //       // 'Accept': 'application/json',
-  //       'Content-Type': 'application/json'
-  //     },
-  //     body: JSON.stringify(data)
-  //   }).catch(e => console.log(e))
-  //   ;
-  // }
-  // ;
+  componentDidMount() {
+    this.loadData()
+  }
 
   render() {
-    // let user = this.props.match.username
-    console.log('profile props', this.props)
-   return (
+    console.log('home props', this.props)
+    let profile, graphs = ''
+    switch (this.state.status) {
+      case 'INITIAL':
+        profile = <em>Loading...</em>
+        graphs = <em>Loading...</em>
+        break;
+      case 'LOADED':
+        profile =
+          <div>
+            <h3>Welcome, {this.state.user.data.name}!</h3>
+            <img src={this.state.user.data.avatar}/>
+          </div>
+        graphs = this.state.user.data.following.map((currency) =>
+          <li key={currency.id}>{currency}</li>
+        );
+        break;
+    }
+    {
+      console.log(this.state)
+    }
+
+    return (
       <div>
-        {/*prop params id: {this.props}*/}
-        {/*<button onClick={this.handleSubmit(user)}>test</button>*/}
-        Profile
-        {/*<li>{this.state.user.name}</li>*/}
-        {/*<li>{this.state.user.email}</li>*/}
-        {/*<li>{this.state.user.created_at}</li>*/}
+        <h1>{this.state.title}</h1>
+        {profile}
+        <h2>Your Currencies:</h2>
+        {graphs}
+        <p><a href="/logout">log out</a></p>
       </div>
-    )
+    );
   }
 }
+
+render(
+  <Profile/>
+  ,
+  document.getElementById('profile'));
+module.hot.accept();

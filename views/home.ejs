@@ -1,17 +1,3 @@
-<% if (!user) { %>
-<script>
-  const user = {
-    data: false
-  }
-</script>
-
-<% } else { %>
-<script>
-  const user = {
-    data: '<%- JSON.stringify(user) %>'
-  };
-</script>
-<% } %>
 <div id="app"></div>
 <script src="./app.bundle.js"></script>
 

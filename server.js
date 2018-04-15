@@ -76,12 +76,29 @@ app.use(passport.session());
 // Define routes.
 app.get('/',
   function (req, res) {
-    res.render('home', {user: req.user});
+    if (!req.user) {
+      res.render('home');
+    } else {
+      res.redirect('profile')
+    }
   });
 
 app.get('/login',
   function (req, res) {
-    res.render('login');
+    res.render('home');
+  });
+
+app.get('/logout',
+  function (req, res, next) {
+    req.logout();
+    res.end();
+    res.redirect('/')
+  },)
+
+app.get('/profile',
+  require('connect-ensure-login').ensureLoggedIn(),
+  function (req, res) {
+    res.render('profile', {user: req.user.username});
   });
 
 app.get('/login/github',
@@ -90,14 +107,14 @@ app.get('/login/github',
 app.get('/login/github/return',
   passport.authenticate('github', {failureRedirect: '/login'}),
   function (req, res) {
-    res.redirect('/');
+    res.redirect('/profile');
   });
 
 // app.get('/profile', function(req, res, next) {
 //   if (!req.user || (req.user.id != req.params.id)) {
 //     return next('Not found');
 //   }
-//   res.render('/');
+//   res.render('/profile');
 // });
 
 
@@ -120,7 +137,6 @@ app.get('/home/:id',
 // api = express.Router()
 
 
-
 // app.post("/update", function (req, res) {
 //   console.error("req", req.body)
 //   require('connect-ensure-login').ensureLoggedIn(),
@@ -137,16 +153,16 @@ app.get('/home/:id',
 
 app.get('/api/user/:id', (req, res) => {
   require('connect-ensure-login').ensureLoggedIn(),
-    console.error('req', req.id)
-    User.findOne(req.id,
-      function (err, obj) {
-        if (err) {
-          res.send(err);
-          return;
-        }
-        // res.json(res)
-        res.json({data: obj});
-      });
+    // console.error('req', req.id)
+  User.findOne(req.id,
+    function (err, obj) {
+      if (err) {
+        res.send(err);
+        return;
+      }
+      // res.json(res)
+      res.json({data: obj});
+    });
   // res.json(res)
   // db.collection('issues').find().toArray().then(issues => {
   //   const metadata = {total_count: issues.length};
@@ -203,15 +219,6 @@ app.use(webpackDevMiddleware(compiler, {
 
 // hot reload
 app.use(webpackHotMiddleware(compiler));
-
-// graphql
-const graphqlHTTP = require('express-graphql');
-const schema = require('./schema/main');
-app.use('/graphql', graphqlHTTP({
-  schema: schema,
-  // context: { db },
-  graphiql: true
-}));
 
 // Serve the files on port 3000.
 app.listen(3000, function () {
