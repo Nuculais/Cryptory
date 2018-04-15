@@ -12,9 +12,9 @@ const bodyParser = require('body-parser');
 const User = require('./model/User')
 const mongoose = require('mongoose')
 mongoose.set('debug', true);
-// const db = mongoose.connect('mongodb://mongo:27017/cryptory');
-mongoose.connect('mongodb://127.0.0.1:27017/cryptory');
-const db = mongoose.connection
+const db = mongoose.connect('mongodb://mongo:27017/cryptory');
+// mongoose.connect('mongodb://127.0.0.1:27017/cryptory');
+// const db = mongoose.connection
 
 
 // logging

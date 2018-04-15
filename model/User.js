@@ -31,6 +31,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  following: {
+    type: Array,
+    default: ''
+  },
   github: String,
   profile: {
     name: {type: String, default: ''},

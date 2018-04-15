@@ -1,13 +1,13 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const webpack = require('webpack');
 
 module.exports = {
   entry: {
     app: ['./src/App.jsx', 'webpack-hot-middleware/client', 'react-hot-loader/patch'],
     welcome: ['./src/views/Welcome/Welcome.jsx', 'webpack-hot-middleware/client',],
-    home: ['./src/views/Home/Home.jsx', 'webpack-hot-middleware/client'],
     profile: ['./src/views/Profile/Profile.jsx', 'webpack-hot-middleware/client'],
     vendor: ['react', 'react-dom', 'react-router'],
   }
@@ -20,7 +20,11 @@ module.exports = {
       template: '!!raw-loader!./views/home.ejs'
     }),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin()
+    new webpack.NoEmitOnErrorsPlugin(),
+    new MiniCssExtractPlugin({
+      filename: "[name].css",
+      chunkFilename: "[id].css"
+    })
   ],
   output: {
     filename: '[name].bundle.js',
@@ -47,6 +51,10 @@ module.exports = {
       {
         test: /\.html$/,
         use: ['html-loader']
+      },
+      {
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, "css-loader"]
       }
     ]
   },
