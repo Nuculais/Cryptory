@@ -22,6 +22,7 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
+          <div className="yes">test</div>
           <h1 className="App-title container-fluid">{this.state.title}</h1>
             <Welcome/>
         </header>

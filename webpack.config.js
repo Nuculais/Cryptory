@@ -21,10 +21,10 @@ module.exports = {
     }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
-    new MiniCssExtractPlugin({
-      filename: "[name].css",
-      chunkFilename: "[id].css"
-    })
+    // new MiniCssExtractPlugin({
+    //   filename: "[name].css",
+    //   chunkFilename: "[id].css"
+    // })
   ],
   output: {
     filename: '[name].bundle.js',
@@ -54,7 +54,11 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader"]
+        use: [
+          'style-loader',
+          'css-loader'
+        ]
+        // use: [MiniCssExtractPlugin.loader, "css-loader"]
       }
     ]
   },
