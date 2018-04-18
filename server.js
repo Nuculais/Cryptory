@@ -90,9 +90,8 @@ app.get('/login',
   });
 
 app.get('/logout',
-  function (req, res, next) {
+  function (req, res) {
     req.logout();
-    res.end();
     res.redirect('/')
   },)
 
