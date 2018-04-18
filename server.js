@@ -108,7 +108,7 @@ app.get('/login/github',
 app.get('/login/github/return',
   passport.authenticate('github', {failureRedirect: '/login'}),
   function (req, res) {
-    res.redirect('/');
+    res.redirect('/profile');
   });
 
 // app.get('/profile', function(req, res, next) {

@@ -8,7 +8,7 @@ const GITHUB_CLIENT_SECRET = 'c4dec1f6544b2af7c2335d836244e080fc02deaa'
 module.exports = new Strategy({
     clientID: GITHUB_CLIENT_ID,
     clientSecret: GITHUB_CLIENT_SECRET,
-    callbackURL: 'http://localhost:3000/login/github/return'
+    callbackURL: 'https://murmuring-sea-20139.herokuapp.com/login/github/return'
   },
   function (accessToken, refreshToken, profile, done) {
     const searchQuery = {
