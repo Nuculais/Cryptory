@@ -3,3 +3,4 @@ website/
 .idea/
 yarn-error.log
 .DS_Store
+server.local.js
