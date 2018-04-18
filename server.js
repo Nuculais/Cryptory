@@ -221,8 +221,10 @@ app.use(webpackDevMiddleware(compiler, {
 // hot reload
 app.use(webpackHotMiddleware(compiler));
 
+const port = process.env.PORT || 3000
+
 // Serve the files on port 3000.
-app.listen(3000, function () {
+app.listen(port, function () {
   console.log('Example app listening on port 3000!\n');
 });
 
