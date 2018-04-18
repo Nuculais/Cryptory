@@ -12,11 +12,12 @@ const bodyParser = require('body-parser');
 const User = require('./model/User')
 const mongoose = require('mongoose')
 mongoose.set('debug', true);
-const db = mongoose.connect('mongodb://mongo:27017/cryptory');
+const uri = `mongodb://${encodeURIComponent('cryptoryadmin')}:${encodeURIComponent('cryptory123456789')}@ds247569.mlab.com:47569/heroku_d783vzs7`
+console.log(uri)
+
+const db = mongoose.connect(uri);
 // mongoose.connect('mongodb://127.0.0.1:27017/cryptory');
 // const db = mongoose.connection
-
-
 // logging
 mongoose.Promise = global.Promise;
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
