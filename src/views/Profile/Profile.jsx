@@ -2,8 +2,6 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import {render} from "react-dom";
 
-// import DefaultLayout from './layouts/default.jsx'
-
 class Profile extends React.Component {
   constructor(props) {
     super(props);
@@ -157,7 +155,6 @@ class Profile extends React.Component {
         <h2>Your Following:</h2>
         {ticker}
         <br/>
-        <br/>
         <p><a href="/logout">log out</a></p>
       </div>
     );
@@ -168,4 +165,6 @@ render(
   <Profile/>,
   document.getElementById('profile'));
 
-module.hot.accept();
+if (module.hot) {
+  module.hot.accept();
+}
