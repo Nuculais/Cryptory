@@ -1,7 +1,6 @@
 const express = require('express');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
-require('dotenv').config();
 
 // mongo
 const User = require('./model/User');

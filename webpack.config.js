@@ -3,14 +3,24 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const webpack = require('webpack');
 
-module.exports = {
-  entry: {
+let entry = {}
+if (process.env.LOCAL) {
+  entry = {
     app: ['./src/App.jsx', 'webpack-hot-middleware/client', 'react-hot-loader/patch'],
     welcome: ['./src/views/Welcome/Welcome.jsx', 'webpack-hot-middleware/client',],
     profile: ['./src/views/Profile/Profile.jsx', 'webpack-hot-middleware/client'],
     vendor: ['react', 'react-dom', 'react-router'],
   }
-  ,
+} else {
+  entry = {
+    app: ['./src/App.jsx'],
+    welcome: ['./src/views/Welcome/Welcome.jsx'],
+    profile: ['./src/views/Profile/Profile.jsx'],
+    vendor: ['react', 'react-dom', 'react-router'],
+  }
+}
+module.exports = {
+  entry: entry,
   devtool: 'inline-source-map',
   plugins: [
     new CleanWebpackPlugin(['dist']),
