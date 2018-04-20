@@ -13,38 +13,43 @@ class Profile extends React.Component {
       status_ticker: 'INITIAL',
       user: '',
       coins: '',
-      currency: 'SEK'
     }
+  }
+
+  startPolling() {
+    const self = this;
+    setTimeout(function () {
+      self.loadCurrencyData(); // do it once and then start it up ...
+      self._timer = setInterval(self.loadCurrencyData.bind(self), 15000);
+    }, 1000);
   }
 
   // TODO: pull user preferences into url call
   loadCurrencyData() {
-    const CUR_API = 'https://min-api.cryptocompare.com/data/pricemulti?fsyms=BTC,ETH,ALT&tsyms=SEK,EUR,USD'
-    fetch(
-      CUR_API)
+    fetch('/api/coin')
       .then(response => {
         if (response.ok) {
           response.json().then(data => {
             this.setState({
-              // status_ticker: 'LOADED',
-              // coins: data,
+              status_ticker: 'LOADED',
+              date: Date().toLocaleString(),
               coins: [
                 {
                   id: 1,
                   name: 'BTC',
                   data: [
-                    {id: 1, price: 'SEK: ' + data['BTC']['SEK']},
-                    {id: 2, price: 'EUR: ' + data['BTC']['EUR']},
-                    {id: 3, price: 'USD: ' + data['BTC']['USD']}
+                    {id: 1, price: 'SEK: ' + data.info.coins['BTC']['SEK']},
+                    {id: 2, price: 'EUR: ' + data.info.coins['BTC']['EUR']},
+                    {id: 3, price: 'USD: ' + data.info.coins['BTC']['USD']}
                   ],
                 },
                 {
                   id: 2,
                   name: 'ETH',
                   data: [
-                    {id: 1, price: 'SEK: ' + data['ETH']['SEK']},
-                    {id: 2, price: 'EUR: ' + data['ETH']['EUR']},
-                    {id: 3, price: 'USD: ' + data['ETH']['USD']}
+                    {id: 1, price: 'SEK: ' + data.info.coins['ETH']['SEK']},
+                    {id: 2, price: 'EUR: ' + data.info.coins['ETH']['EUR']},
+                    {id: 3, price: 'USD: ' + data.info.coins['ETH']['USD']}
                   ]
                 },
                 {
@@ -52,14 +57,13 @@ class Profile extends React.Component {
                   name: 'ALT',
                   data:
                     [
-                      {id: 1, price: 'SEK: ' + data['ALT']['SEK']},
-                      {id: 2, price: 'EUR: ' + data['ALT']['EUR']},
-                      {id: 3, price: 'USD: ' + data['ALT']['USD']}
+                      {id: 1, price: 'SEK: ' + data.info.coins['ALT']['SEK']},
+                      {id: 2, price: 'EUR: ' + data.info.coins['ALT']['EUR']},
+                      {id: 3, price: 'USD: ' + data.info.coins['ALT']['USD']}
                     ]
                 }
               ]
             });
-            this.loadProfileData()
           })
         } else {
           response.json().then(error => {
@@ -70,16 +74,6 @@ class Profile extends React.Component {
       alert("Error in fetching currency data from server:", err);
     });
   };
-
-  convertObjToList(data) {
-    let list = Object.keys(data).map(key => [String(key), data[key]])
-    for (let i = 0; i < list.length; i++) {
-      console.log(list[i][1] = list[i][1]['SEK'])
-      // list[i] = [Object.keys(list[i][1]).map(key => [String(key), list[i][1][key]])]
-    }
-    return list
-  }
-
 
   loadProfileData() {
     fetch(`api/user/${user.data}`).then(response => {
@@ -101,30 +95,27 @@ class Profile extends React.Component {
   };
 
   loadData() {
-    this.loadCurrencyData()
+    this.loadProfileData()
+    this.startPolling()
   }
 
   componentDidMount() {
     this.loadData()
   }
 
-  formatData(list1, list2) {
-    let info = [];
-    for (let i = 0; i < list2.length; i++) {
-      if (list1.contains(list2[i])) {
-        info.push(list2[i])
-      }
+  componentWillUnmount() {
+    if (this._timer) {
+      clearInterval(this._timer);
+      this._timer = null;
     }
-    return info
   }
 
   render() {
     // console.log('home props', this.props)
-    let profile, graphs, ticker = ''
+    let profile, ticker = ''
     switch (this.state.status_prof) {
       case 'INITIAL':
         profile = <em>Loading...</em>
-        graphs = <em>Loading...</em>
         break;
       case 'LOADED':
         profile =
@@ -132,39 +123,31 @@ class Profile extends React.Component {
             <h3>Welcome, {this.state.user.data.name}!</h3>
             <img src={this.state.user.data.avatar}/>
           </div>
-        graphs = <ul>
-          {console.log(this.state.coins)}{this.state.coins.map((coin) => {
-          return (
-            <li key={coin.id}>
-              <div>{coin.name}</div>
-              <ul>
-                {coin.data.map(currency => {
-                  return <li key={currency.id}>{currency.price}</li>
-                })}
-              </ul>
-            </li>
-          )
-        })}
-        </ul>
-        // graphs = this.state.user.data.following.map(name =>
-        //   <li key={name.id}>{name} {this.state.coins.forEach(item =>
-        //     item[`${name}`] ? 'yes' : 'no')}</li>)
         break;
     }
     switch (this.state.status_ticker) {
       case 'INITIAL':
-        ticker = <em>Loading..</em>
+        ticker = <em>UPDATING...</em>
         break;
       case 'LOADED':
-        // console.log(this.state.currency)
         ticker = <div className={'ticker'}>
-          BTC
-
+          <em>{`Prices as of ${this.state.date}`}</em>
+          <ul>
+            {this.state.coins.map((coin) => {
+              return (
+                <li key={coin.id}>
+                  <div>{coin.name}</div>
+                  <ul>
+                    {coin.data.map(currency => {
+                      return <li key={currency.id}>{currency.price}</li>
+                    })}
+                  </ul>
+                </li>
+              )
+            })}
+          </ul>
         </div>
         break;
-    }
-    {
-      // console.log(this.state)
     }
 
     return (
@@ -172,9 +155,8 @@ class Profile extends React.Component {
         <h1>{this.state.title}</h1>
         {profile}
         <h2>Your Following:</h2>
-        {graphs}
+        {ticker}
         <br/>
-        <em>{`Prices as of ${Date().toLocaleString()}`}</em>
         <br/>
         <p><a href="/logout">log out</a></p>
       </div>

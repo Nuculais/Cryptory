@@ -2,13 +2,26 @@
 const User = require('../model/User')
 const Strategy = require('passport-github').Strategy;
 
-const GITHUB_CLIENT_ID = '0f70e94a63215b10bb9e'
-const GITHUB_CLIENT_SECRET = 'c4dec1f6544b2af7c2335d836244e080fc02deaa'
+let GITHUB_CLIENT_ID = ''
+let GITHUB_CLIENT_SECRET = ''
+let url = ''
+if (process.env.DEV) {
+  console.log('HERE')
+  GITHUB_CLIENT_ID = '05c9ea554088eb574e81'
+  GITHUB_CLIENT_SECRET = '4f20b014792a08ef802ddc8f7b511bd02947c60d'
+  url = 'http://localhost:3000/login/github/return'
+} else {
+  GITHUB_CLIENT_ID = '0f70e94a63215b10bb9e'
+  GITHUB_CLIENT_SECRET = 'c4dec1f6544b2af7c2335d836244e080fc02deaa'
+  url = 'https://murmuring-sea-20139.herokuapp.com/login/github/return'
+}
+
+
 
 module.exports = new Strategy({
     clientID: GITHUB_CLIENT_ID,
     clientSecret: GITHUB_CLIENT_SECRET,
-    callbackURL: 'https://murmuring-sea-20139.herokuapp.com/login/github/return'
+    callbackURL: url
   },
   function (accessToken, refreshToken, profile, done) {
     const searchQuery = {
