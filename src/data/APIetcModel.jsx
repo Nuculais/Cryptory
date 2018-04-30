@@ -5,7 +5,7 @@ const APIetcModel = function(){
     let TimePeriod = null; //Which format? Either a fixed amount of days (or one variable for format 
     //and one for amount) and a function to calculate the elapsed time until now, or two datetimes. 
     //Like "Last 7 days" or "From xx-xx-xx to xx-xx-xx". Or all of them?
-
+    let currentCurr = 'BTC'; //used when showing data about a selected currency in histogram.jsx
     let Wallet = [];
     let Transactions = [];
 
@@ -15,7 +15,15 @@ const APIetcModel = function(){
         amount: 0
     };
 
-    //A transaction. Gets store in Transctions[]
+    this.setCurrentCurr = function(type){
+        currentCurr = type;
+    }
+
+    this.getCurrentCurr = function(){
+        return currentCurr;
+    }
+
+    //A transaction. Gets stored in Transctions[]
     let Transaction = {
         date: null, //datetime?
         type: "",

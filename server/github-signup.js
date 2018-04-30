@@ -1,14 +1,14 @@
-// const User = require('requiremongoose').model('User')
 const User = require('../model/User')
 const Strategy = require('passport-github').Strategy;
 
-const GITHUB_CLIENT_ID = '0f70e94a63215b10bb9e'
-const GITHUB_CLIENT_SECRET = 'c4dec1f6544b2af7c2335d836244e080fc02deaa'
+const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID
+const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET
+const url = process.env.GITHUB_CALLBACK_URL
 
 module.exports = new Strategy({
     clientID: GITHUB_CLIENT_ID,
     clientSecret: GITHUB_CLIENT_SECRET,
-    callbackURL: 'http://localhost:3000/login/github/return'
+    callbackURL: url
   },
   function (accessToken, refreshToken, profile, done) {
     const searchQuery = {
