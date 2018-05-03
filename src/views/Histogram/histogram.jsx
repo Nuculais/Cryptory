@@ -12,27 +12,30 @@ class histogram extends Component {
       super(props);
       this.state = {
         status: 'INITIAL',
+        histogramdata: this.props.model.histogramData('day')
       }
     }
-  
+
   componentDidMount=()=> {
     this.props.model.addObserver(this)
+    this.props.model.histogramData(slidervalue);
 
   }
-  
+
   componentWillUnmount(){
     this.props.model.removeObserver(this)
   }
-  
+
   update(){
     this.setState({
-
+      histogramdata: this.props.model.histogramData(slidervalue)
     })
   }
 
   newCurr = (e) => {
     this.props.model.setCurrentCurr(e.target.value);
   }
+
 
   render(){
     return(
@@ -56,14 +59,16 @@ class histogram extends Component {
             <div className='col-md-5'>
               <h2>Current price: </h2><p>{ResultOfAPICallPlaceholder}</p>
             </div>
-            
+
          <div className='row' id='graphOfSelectedCurrency'>
          <VictoryChart>
            <VictoryLine
             data={ResultOfAnotherAPICallPlaceholder}
-           />
+            />
          </VictoryChart>
+         <Slider />
          </div>
+
          <div className='row' id='graphOfUserWallet'>
          <VictoryChart>
            <VictoryLine
@@ -81,4 +86,3 @@ class histogram extends Component {
 
 }
 export default histogram;
-
