@@ -16,23 +16,23 @@ class histogram extends Component {
     }
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
     this.props.model.addObserver(this)
     this.props.model.histogramData(slidervalue);
 
   }
 
-  componentWillUnmount() {
+  componentWillUnmount = () => {
     this.props.model.removeObserver(this)
   }
 
-  update() {
+  update = () => {
     this.setState({
       histogramdata: this.props.model.histogramData(slidervalue)
     })
   }
 
-  newCurr(e) {
+  newCurr = (e) => {
     this.props.model.setCurrentCurr(e.target.value);
   }
 

@@ -16,7 +16,7 @@ class Profile extends React.Component {
     }
   }
 
-  startPolling() {
+  startPolling = () => {
     const self = this;
     setTimeout(function () {
       self.loadCurrencyData(); // do it once and then start it up ...
@@ -25,7 +25,7 @@ class Profile extends React.Component {
   }
 
   // TODO: pull user preferences into url call
-  loadCurrencyData() {
+  loadCurrencyData = () => {
     fetch('/api/coin')
       .then(response => {
         if (response.ok) {
@@ -75,7 +75,7 @@ class Profile extends React.Component {
     });
   };
 
-  loadProfileData() {
+  loadProfileData = () => {
     console.log('props', user.data)
     fetch(`api/user/${user.data}`).then(response => {
       if (response.ok) {
@@ -95,16 +95,16 @@ class Profile extends React.Component {
     });
   };
 
-  loadData() {
+  loadData = () => {
     this.loadProfileData()
     this.startPolling()
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
     this.loadData()
   }
 
-  componentWillUnmount() {
+  componentWillUnmount = () => {
     if (this._timer) {
       clearInterval(this._timer);
       this._timer = null;
