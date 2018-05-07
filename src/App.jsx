@@ -1,10 +1,6 @@
 import React, {Component} from 'react';
 import './App.css'
 import Welcome from './views/Welcome/Welcome';
-import Histogram from './views/Histogram/Histogram';
-import APIetcModel from './data/APIetcModel';
-// import Home from './views/Home/Home';
-// import Profile from './views/Profile/Profile'
 import {render} from "react-dom";
 
 class App extends Component {

@@ -1,6 +1,8 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import {render} from "react-dom";
+import Histogram from '../Histogram/Histogram';
+import APIetcModel from '../../data/APIetcModel';
 
 class Profile extends React.Component {
   constructor(props) {
@@ -74,6 +76,7 @@ class Profile extends React.Component {
   };
 
   loadProfileData() {
+    console.log('props', user.data)
     fetch(`api/user/${user.data}`).then(response => {
       if (response.ok) {
         response.json().then(data => {
