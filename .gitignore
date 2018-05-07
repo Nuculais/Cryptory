@@ -3,7 +3,6 @@ website/
 .idea/
 yarn-error.log
 .DS_Store
-server.local.js
 dist/
 .env
 npm-debug.log
