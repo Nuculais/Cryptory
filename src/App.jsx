@@ -1,14 +1,10 @@
 import React, {Component} from 'react';
 import './App.css'
 import Welcome from './views/Welcome/Welcome';
-<<<<<<< HEAD
 import Histogram from './views/Histogram/Histogram';
 import APIetcModel from './data/APIetcModel';
 // import Home from './views/Home/Home';
 // import Profile from './views/Profile/Profile'
-=======
-
->>>>>>> f3ee3f3c8edc725d29be0968920518aaa8adee18
 import {render} from "react-dom";
 
 class App extends Component {
