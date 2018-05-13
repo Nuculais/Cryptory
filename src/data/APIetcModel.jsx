@@ -28,6 +28,7 @@ const APIetcModel = function () {
   //Used in the histogram view
   this.setCurrentCurr = function (type) {
     currentCurr = type;
+    update();
   }
 
   this.getCurrentCurr = function () {
@@ -126,21 +127,21 @@ const APIetcModel = function () {
     let historesult = [];
     let Data = this.getHistorical(curr, slidervalue).Data;
 
-    if (slidervalue === 'week') {
+    if (slidervalue === 2) { //week
       for (let i = 0; i < Data.length; i++) {
         //x = 'Day '+i, y=Data[i].close
         elem = {x: 'Day ' + i, y: Data[i].close}; //Can this be done? Or will it be the wrong format?
         historesult.push(elem);
       }
     }
-    else if (slidervalue === 'month') {
+    else if (slidervalue === 3) { //month
       for (let i = 0; i < Data.length; i++) {
         //x = 'Day '+i, y=Data[i].close
         elem = {x: 'Day ' + i, y: Data[i].close};
         historesult.push(elem);
       }
     }
-    else if (slidervalue === 'day') {
+    else if (slidervalue === 1) { //day
       for (let i = 0; i < Data.length; i++) {
         //x = 'Day '+i, y=Data[i].close
         elem = {x: 'Hour ' + i, y: Data[i].close};

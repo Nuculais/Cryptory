@@ -1,10 +1,14 @@
 //This is the view displaying histograms etc.
 import React, {Component} from 'react';
 import {render} from 'react-dom';
-import {VictoryChart, VictoryLine} from 'victory'; //Check for actual path
+import {VictoryChart, VictoryLine} from 'victory'; //Check for actual path.
 // import './histogram.css';
 import {modelInstance} from '../../data/APIetcModel';
 
+//import Slider from 'rc-slider/lib/Slider';
+//import Range from 'rc-slider/lib/Range';
+import 'rc-slider/assets/index.css'; //These three need to be downloaded through npm. Check the paths.
+//Also import react-bootstrap-slider from github/brownieboy
 //import the other user data somehow
 
 class histogram extends Component {
@@ -12,7 +16,9 @@ class histogram extends Component {
     super(props);
     this.state = {
       status: 'INITIAL',
-      histogramdata: this.props.model.histogramData('day')
+      histogramdata: this.props.model.histogramData(1),
+      slidervalue: 1,
+      currentCurr: 'BTC'
     }
   }
 
@@ -21,21 +27,25 @@ class histogram extends Component {
     this.props.model.histogramData(slidervalue);
 
   }
-
   componentWillUnmount = () => {
     this.props.model.removeObserver(this)
   }
 
   update = () => {
     this.setState({
-      histogramdata: this.props.model.histogramData(slidervalue)
+      histogramdata: this.props.model.histogramData(this.state.slidervalue), 
+      currentCurr: this.props.model.getCurrentCurr()
     })
   }
 
   newCurr = (e) => {
     this.props.model.setCurrentCurr(e.target.value);
+    this.setState({currentCurr: e.target.value});
   }
 
+  OnSliderChangeValue(e) {
+    this.setState({ slidervalue: e.target.value });
+  }
 
   render() {
     return (
@@ -59,25 +69,34 @@ class histogram extends Component {
             </select>
           </div>
           <div className='col-md-5'>
-            <h2>Current price: </h2><p>{ResultOfAPICallPlaceholder}</p>
+            <h2>Current price: </h2><p>{this.props.model.getCurrentPrice(this.state.currentCurr)}</p>
           </div>
 
           <div className='row' id='graphOfSelectedCurrency'>
             <VictoryChart>
               <VictoryLine
-                data={ResultOfAnotherAPICallPlaceholder}
+                data={this.props.model.histogramData(slidervalue)}
               />
             </VictoryChart>
-            <Slider/>
+            <ReactBootstrapSlider
+              max={3}
+              min={1}
+              step={1}
+              ticks={[1, 2, 3]}
+              ticks_labels = {["Day", "Week", "Month"]}
+              tooltip="hide"
+              change={this.state.OnSliderChangeValue}
+              value={this.state.slidervalue} 
+              />
           </div>
 
-          <div className='row' id='graphOfUserWallet'>
+          <!-- <div className='row' id='graphOfUserWallet'>
             <VictoryChart>
               <VictoryLine
 
               />
             </VictoryChart>
-          </div>
+          </div> -->
 
         </div>
 
