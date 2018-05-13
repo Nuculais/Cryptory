@@ -69,7 +69,7 @@ class histogram extends Component {
             </select>
           </div>
           <div className='col-md-5'>
-            <h2>Current price: </h2><p>{this.props.model.getCurrentPrice(this.state.currentCurr)}</p>
+            <h2>Current price: </h2><p>{this.props.model.getCurrentPrice(this.state.currentCurr, 'SEK')}</p>
           </div>
 
           <div className='row' id='graphOfSelectedCurrency'>
