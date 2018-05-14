@@ -1,9 +1,10 @@
 //This is the view displaying histograms etc.
 import React, {Component} from 'react';
 import {render} from 'react-dom';
-//import {VictoryChart, VictoryLine} from 'victory'; //Check for actual path.
+import {VictoryChart, VictoryLine} from 'victory'; //Check for actual path.
 // import './histogram.css';
 import {modelInstance} from '../../data/APIetcModel';
+import ReactBootstrapSlider from 'react-bootstrap-slider';
 
 //import Slider from 'rc-slider/lib/Slider';
 //import Range from 'rc-slider/lib/Range';
@@ -11,35 +12,42 @@ import {modelInstance} from '../../data/APIetcModel';
 //Also import react-bootstrap-slider from github/brownieboy
 //import the other user data somehow
 
-class histogram extends Component {
+class Histogram extends Component {
   constructor(props) {
     super(props);
     this.state = {
       status: 'INITIAL',
-      histogramdata: this.props.model.histogramData(1),
+      //histogramdata: modelInstance.histogramData(1),
       slidervalue: 1,
       currentCurr: 'BTC'
     }
   }
 
   componentDidMount = () => {
-    this.props.model.addObserver(this)
-    this.props.model.histogramData(slidervalue);
-
+    //console.error(this.props);
+    //this.modelInstance.addObserver(this)
+    //this.modelInstance.histogramData(slidervalue);
+    this.setState({
+      status: 'LOADED',
+      //histogramdata: modelInstance.histogramData(1),
+      slidervalue: 1,
+      currentCurr: 'BTC'
+    })
   }
   componentWillUnmount = () => {
-    this.props.model.removeObserver(this)
+    modelInstance.removeObserver(this)
   }
 
   update = () => {
     this.setState({
-      histogramdata: this.props.model.histogramData(this.state.slidervalue), 
-      currentCurr: this.props.model.getCurrentCurr()
+      histogramdata: modelInstance.histogramData(this.state.slidervalue), 
+      currentCurr: modelInstance.getCurrentCurr(),
+      slidervalue: 1
     })
   }
 
   newCurr = (e) => {
-    this.props.model.setCurrentCurr(e.target.value);
+    modelInstance.setCurrentCurr(e.target.value);
     this.setState({currentCurr: e.target.value});
   }
 
@@ -48,7 +56,13 @@ class histogram extends Component {
   }
 
   render() {
-    return (
+      let histogram = ''
+      switch (this.state.status) {
+        case 'INITIAL':
+        histogram = <em>Loading...</em>
+        break;
+        case 'LOADED':
+        histogram = 
       <div className='row'>
         <div className='col-md-10'>
           <div className='col-md-5'>
@@ -69,13 +83,13 @@ class histogram extends Component {
             </select>
           </div>
           <div className='col-md-5'>
-            <h2>Current price: </h2><p>{this.props.model.getCurrentPrice(this.state.currentCurr, 'SEK')}</p>
+            <h2>Current price: </h2><p>{modelInstance.getCurrentPrice(this.state.currentCurr, 'SEK')}</p>
           </div>
 
           <div className='row' id='graphOfSelectedCurrency'>
             <VictoryChart>
               <VictoryLine
-                data={this.props.model.histogramData(slidervalue)}
+                data={modelInstance.histogramData(this.state.slidervalue)}
               />
             </VictoryChart>
             <ReactBootstrapSlider
@@ -97,16 +111,17 @@ class histogram extends Component {
               />
             </VictoryChart>
           </div>
-
         </div>
-
-      </div>
-    )
-  }
+      </div>     
+         break;        
 }
+return(
+  <div>{histogram}</div>
+);
+  }}
 
 render(
-  <histogram/>,
+  <Histogram/>,
   document.getElementById('histogram'));
 
 if (module.hot) {

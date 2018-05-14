@@ -1,8 +1,6 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import {render} from "react-dom";
-import histogram from '../Histogram/histogram';
-import APIetcModel from '../../data/APIetcModel';
 
 class Profile extends React.Component {
   constructor(props) {

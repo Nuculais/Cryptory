@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import './App.css'
 import Welcome from './views/Welcome/Welcome';
 import {render} from "react-dom";
-import histogram from './views/Histogram/histogram';
+//import Histogram from './views/Histogram/Histogram';
 //import 'bootstrap/dist/css/bootstrap.min.css';
 
 class App extends Component {
