@@ -9,6 +9,7 @@ if (process.env.LOCAL) {
     app: ['./src/App.jsx', 'webpack-hot-middleware/client', 'react-hot-loader/patch'],
     welcome: ['./src/views/Welcome/Welcome.jsx', 'webpack-hot-middleware/client',],
     profile: ['./src/views/Profile/Profile.jsx', 'webpack-hot-middleware/client'],
+    histogram: ['./src/views/Histogram/histogram.jsx', 'webpack-hot-middleware/client'],
     vendor: ['react', 'react-dom', 'react-router'],
   }
 } else {
@@ -16,12 +17,13 @@ if (process.env.LOCAL) {
     app: ['./src/App.jsx'],
     welcome: ['./src/views/Welcome/Welcome.jsx'],
     profile: ['./src/views/Profile/Profile.jsx'],
+    histogram: ['./src/views/Histogram/histogram.jsx'],
     vendor: ['react', 'react-dom', 'react-router'],
   }
 }
 module.exports = {
   entry: entry,
-  devtool: 'inline-source-map',
+  devtool: 'source-map',
   plugins: [
     new CleanWebpackPlugin(['dist']),
     new HtmlWebpackPlugin({

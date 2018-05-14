@@ -76,6 +76,12 @@ app.get('/login/github/return',
     res.redirect('/profile');
   });
 
+  app.get('/histogram',
+  require('connect-ensure-login').ensureLoggedIn(),
+  function (req, res) { 
+    res.render('histogram');
+  });
+
 app.get('/home/:id',
   require('connect-ensure-login').ensureLoggedIn(),
   (req, res) => {

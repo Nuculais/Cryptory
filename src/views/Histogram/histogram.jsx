@@ -1,13 +1,13 @@
 //This is the view displaying histograms etc.
 import React, {Component} from 'react';
 import {render} from 'react-dom';
-import {VictoryChart, VictoryLine} from 'victory'; //Check for actual path.
+//import {VictoryChart, VictoryLine} from 'victory'; //Check for actual path.
 // import './histogram.css';
 import {modelInstance} from '../../data/APIetcModel';
 
 //import Slider from 'rc-slider/lib/Slider';
 //import Range from 'rc-slider/lib/Range';
-import 'rc-slider/assets/index.css'; //These three need to be downloaded through npm. Check the paths.
+//import 'rc-slider/assets/index.css'; //These three need to be downloaded through npm. Check the paths.
 //Also import react-bootstrap-slider from github/brownieboy
 //import the other user data somehow
 
@@ -90,13 +90,13 @@ class histogram extends Component {
               />
           </div>
 
-          <!-- <div className='row' id='graphOfUserWallet'>
+           <div className='row' id='graphOfUserWallet'>
             <VictoryChart>
               <VictoryLine
 
               />
             </VictoryChart>
-          </div> -->
+          </div>
 
         </div>
 
@@ -105,4 +105,10 @@ class histogram extends Component {
   }
 }
 
-export default histogram;
+render(
+  <histogram/>,
+  document.getElementById('histogram'));
+
+if (module.hot) {
+  module.hot.accept();
+}

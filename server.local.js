@@ -76,6 +76,12 @@ app.get('/login',
     res.render('home');
   });
 
+  app.get('/histogram',
+  require('connect-ensure-login').ensureLoggedIn(),
+  function (req, res) { 
+    res.render('histogram');
+  });
+
 app.get('/logout',
   function (req, res) {
     req.logout();

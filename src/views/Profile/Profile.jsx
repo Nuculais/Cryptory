@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import {render} from "react-dom";
-import Histogram from '../Histogram/Histogram';
+import histogram from '../Histogram/histogram';
 import APIetcModel from '../../data/APIetcModel';
 
 class Profile extends React.Component {
@@ -159,6 +159,7 @@ class Profile extends React.Component {
         {ticker}
         <br/>
         <p><a href="/logout">log out</a></p>
+        <p><a href="/histogram" id="histo" className="btn">Wallet and historical exchange rates</a></p>
       </div>
     );
   }

@@ -1,14 +1,21 @@
 const User = require('../model/User')
 const Strategy = require('passport-github').Strategy;
 
-const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID
-const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET
-const url = process.env.GITHUB_CALLBACK_URL
+//const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID
+//const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET
+//const url = process.env.GITHUB_CALLBACK_URL
+
+LOCAL=true
+const GITHUB_CLIENT_ID="05c9ea554088eb574e81";
+const GITHUB_CLIENT_SECRET="4f20b014792a08ef802ddc8f7b511bd02947c60d";
+const GITHUB_CALLBACK_URL="http://localhost:3000/login/github/return";
+
 
 module.exports = new Strategy({
     clientID: GITHUB_CLIENT_ID,
     clientSecret: GITHUB_CLIENT_SECRET,
-    callbackURL: url
+    //callbackURL: url
+	callbackURL: GITHUB_CALLBACK_URL
   },
   function (accessToken, refreshToken, profile, done) {
     const searchQuery = {

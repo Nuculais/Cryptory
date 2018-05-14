@@ -2,7 +2,8 @@ import React, {Component} from 'react';
 import './App.css'
 import Welcome from './views/Welcome/Welcome';
 import {render} from "react-dom";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import histogram from './views/Histogram/histogram';
+//import 'bootstrap/dist/css/bootstrap.min.css';
 
 class App extends Component {
   constructor(props) {
