@@ -11,6 +11,7 @@
     "local": "node server.local.js"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.4",
     "babel-preset-env": "^1.6.1",
@@ -28,6 +29,8 @@
     "helmet": "^3.12.0",
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^3.2.0",
+    "http": "^0.0.0",
+    "material-ui": "^0.20.1",
     "mongoose": "^5.0.13",
     "morgan": "^1.9.0",
     "node-fetch": "^2.1.2",
@@ -41,6 +44,8 @@
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
     "serve-static": "^1.13.2",
+    "socket.io": "^2.1.0",
+    "socket.io-client": "^2.1.0",
     "style-loader": "^0.20.3",
     "victory": "^0.26.0",
     "webpack": "^4.5.0",

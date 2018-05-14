@@ -9,6 +9,7 @@ if (process.env.LOCAL) {
     app: ['./src/App.jsx', 'webpack-hot-middleware/client', 'react-hot-loader/patch'],
     welcome: ['./src/views/Welcome/Welcome.jsx', 'webpack-hot-middleware/client',],
     profile: ['./src/views/Profile/Profile.jsx', 'webpack-hot-middleware/client'],
+    // 'socket.io': ['./src/feed-socket.io.js'],
     vendor: ['react', 'react-dom', 'react-router'],
   }
 } else {

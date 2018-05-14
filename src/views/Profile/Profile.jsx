@@ -1,8 +1,15 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import {render} from "react-dom";
-import Histogram from '../Histogram/Histogram';
-import APIetcModel from '../../data/APIetcModel';
+import Progress from '../Progress/Progress'
+// import WatchCoin from '../Ticker/WatchCoin'
+// import CoinTable from '../Ticker/CoinTable'
+// import feed from '../../feed-socket.io'
+import socketIOClient from "socket.io-client";
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+
 
 class Profile extends React.Component {
   constructor(props) {
@@ -12,69 +19,50 @@ class Profile extends React.Component {
       status_prof: 'INITIAL',
       status_ticker: 'INITIAL',
       user: '',
-      coins: '',
+      currencies: {
+        'BTC': {
+          'SEK': {
+            'current': '',
+            'last': '',
+          },
+          'USD': {
+            'current': '',
+            'last': ''
+          },
+          'EUR': {
+            'current': '',
+            'last': ''
+          }
+        }
+      },
+      endpoint: "http://localhost:4001"
     }
   }
 
-  startPolling = () => {
-    const self = this;
-    setTimeout(function () {
-      self.loadCurrencyData(); // do it once and then start it up ...
-      self._timer = setInterval(self.loadCurrencyData.bind(self), 15000);
-    }, 1000);
+  // getInitialState() {
+  //   let coins = {};
+  //   feed.watch(['MCD', 'BA', 'BAC', 'LLY', 'GM', 'GE', 'UAL', 'WMT', 'AAL', 'JPM']);
+  //   feed.onChange(function (coin) {
+  //     coins[coin.symbol] = coin;
+  //     this.setState({coins: coins, last: coin});
+  //   }.bind(this));
+  //   return {coins: coins};
+  // }
+
+  watchCoin(symbols) {
+    symbols = symbols.replace(/ /g, '');
+    let arr = symbols.split(",");
+    feed.watch(arr);
   }
 
-  // TODO: pull user preferences into url call
-  loadCurrencyData = () => {
-    fetch('/api/coin')
-      .then(response => {
-        if (response.ok) {
-          response.json().then(data => {
-            this.setState({
-              status_ticker: 'LOADED',
-              date: Date().toLocaleString(),
-              coins: [
-                {
-                  id: 1,
-                  name: 'BTC',
-                  data: [
-                    {id: 1, price: 'SEK: ' + data.info.coins['BTC']['SEK']},
-                    {id: 2, price: 'EUR: ' + data.info.coins['BTC']['EUR']},
-                    {id: 3, price: 'USD: ' + data.info.coins['BTC']['USD']}
-                  ],
-                },
-                {
-                  id: 2,
-                  name: 'ETH',
-                  data: [
-                    {id: 1, price: 'SEK: ' + data.info.coins['ETH']['SEK']},
-                    {id: 2, price: 'EUR: ' + data.info.coins['ETH']['EUR']},
-                    {id: 3, price: 'USD: ' + data.info.coins['ETH']['USD']}
-                  ]
-                },
-                {
-                  id: 3,
-                  name: 'ALT',
-                  data:
-                    [
-                      {id: 1, price: 'SEK: ' + data.info.coins['ALT']['SEK']},
-                      {id: 2, price: 'EUR: ' + data.info.coins['ALT']['EUR']},
-                      {id: 3, price: 'USD: ' + data.info.coins['ALT']['USD']}
-                    ]
-                }
-              ]
-            });
-          })
-        } else {
-          response.json().then(error => {
-            alert("Failed to fetch issues:" + error.message)
-          });
-        }
-      }).catch(err => {
-      alert("Error in fetching currency data from server:", err);
-    });
-  };
+  unwatchCoin(symbol) {
+    feed.unwatch(symbol);
+    let coins = this.state.coins;
+    delete coins[symbol];
+    this.setState({coins: coins});
+  }
 
+  // TODO: pull user preferences into
   loadProfileData = () => {
     console.log('props', user.data)
     fetch(`api/user/${user.data}`).then(response => {
@@ -95,28 +83,207 @@ class Profile extends React.Component {
     });
   };
 
-  loadData = () => {
-    this.loadProfileData()
-    this.startPolling()
-  }
-
   componentDidMount = () => {
-    this.loadData()
+    const endpoint = this.state.endpoint;
+    const socket = socketIOClient(endpoint);
+    this.setState({status_ticker: 'INITIAL'})
+    socket.on("coins", data => {
+      // console.log('received socket data', data.BTC)
+      this.setState({
+        currencies: {
+          'BTC': {
+            'SEK': {
+              last: this.state.currencies['BTC']['SEK']['current'],
+              current: data.BTC.SEK
+            },
+            'USD': {
+              last: this.state.currencies['BTC']['USD']['current'],
+              current: data.BTC.USD
+            },
+            'EUR': {
+              last: this.state.currencies['BTC']['EUR']['current'],
+              current: data.BTC.EUR
+            }
+          }
+        },
+        coins: [
+          {
+            id: 1,
+            name: 'BTC',
+            prices: [
+              {
+                id: 1,
+                name: 'SEK',
+                data: [
+                  {
+                    id: 1,
+                    current: this.state.currencies['BTC']['SEK']['current'],
+                  },
+                  {
+                    id: 2,
+                    last: this.state.currencies['BTC']['SEK']['last']
+                  }
+                ],
+              },
+              {
+                id: 2,
+                name: 'EUR',
+                data: [
+                  {
+                    id: 1,
+                    current: this.state.currencies['BTC']['EUR']['current'],
+                  },
+                  {
+                    id: 2,
+                    last: this.state.currencies['BTC']['EUR']['last']
+                  }
+                ],
+              },
+              {
+                id: 3,
+                name: 'USD',
+                data: [
+                  {
+                    id: 1,
+                    current: this.state.currencies['BTC']['USD']['current'],
+                  },
+                  {
+                    id: 2,
+                    last: this.state.currencies['BTC']['USD']['last']
+                  }
+                ],
+              }
+            ]
+          },
+        ],
+        //   {
+        //     id: 2,
+        //     name: 'ETH',
+        //     data: [
+        //       {id: 1, price: 'SEK: ' + data.ETH.SEK},
+        //       {id: 2, price: 'EUR: ' + data.ETH.EUR},
+        //       {id: 3, price: 'USD: ' + data.ETH.USD}
+        //     ]
+        //   },
+        //   {
+        //     id: 3,
+        //     name: 'ETH',
+        //     data: [
+        //       {id: 1, price: 'SEK: ' + data.ETH.SEK},
+        //       {id: 2, price: 'EUR: ' + data.ETH.EUR},
+        //       {id: 3, price: 'USD: ' + data.ETH.USD}
+        //     ]
+        //   },
+        // ],
+        //   {
+        //     id: 4,
+        //     name: 'C',
+        //     data:
+        //       [
+        //         {
+        //           id: 1, price: {
+        //             id: 1,
+        //             name: 'SEK',
+        //             data: {
+        //               id: 1,
+        //               current: data.BTC.SEK,
+        //               id: 2,
+        //               last: this.state.currencies['BTC']['SEK']['last']
+        //             }
+        //           }
+        //         },
+        //         {
+        //           id: 2, price: {
+        //             id: 1, 'EUR': {
+        //               value: data.BTC.EUR
+        //             }
+        //           }
+        //         },
+        //         {
+        //           id: 3, price: {
+        //             id: 1, 'USD': {
+        //               value: data.BTC.USD
+        //             }
+        //           }
+        //         }
+        //       ]
+        //   },
+        // ],
+        //   {
+        //     id: 2,
+        //     name: 'ETH',
+        //     data:
+        //       [
+        //         {
+        //           id: 1, price: {
+        //             id: 1, 'SEK': {
+        //               value: data.ETH.SEK
+        //             }
+        //           }
+        //         },
+        //         {
+        //           id: 2, price: {
+        //             id: 1, 'EUR': {
+        //               value: data.ETH.EUR
+        //             }
+        //           }
+        //         },
+        //         {
+        //           id: 3, price: {
+        //             id: 1, 'USD': {
+        //               value: data.ETH.USD
+        //             }
+        //           }
+        //         }
+        //       ]
+        //   },
+        //   {
+        //     id: 3,
+        //     name: 'ALT',
+        //     data:
+        //       [
+        //         {
+        //           id: 1, price: {
+        //             id: 1, 'SEK': {
+        //               value: data.ALT.SEK
+        //             }
+        //           }
+        //         },
+        //         {
+        //           id: 2, price: {
+        //             id: 1, 'EUR': {
+        //               value: data.ALT.EUR
+        //             }
+        //           }
+        //         },
+        //         {
+        //           id: 3, price: {
+        //             id: 1, 'USD': {
+        //               value: data.ALT.USD
+        //             }
+        //           }
+        //         }
+        //       ]
+        //   }
+        // ],
+        status_ticker: 'LOADED'
+      })
+      console.log('currencies', this.state.currencies)
+      console.log('coins', this.state.coins)
+    });
+    this.loadProfileData()
   }
 
-  componentWillUnmount = () => {
-    if (this._timer) {
-      clearInterval(this._timer);
-      this._timer = null;
-    }
+  handleColor = (data) => {
+    // console.log('handlecolor data', data)
+    return 'green'
   }
 
   render() {
-    // console.log('home props', this.props)
-    let profile, ticker = ''
+    let profile;
     switch (this.state.status_prof) {
       case 'INITIAL':
-        profile = <em>Loading...</em>
+        profile = <Progress/>
         break;
       case 'LOADED':
         profile =
@@ -126,38 +293,40 @@ class Profile extends React.Component {
           </div>
         break;
     }
-    switch (this.state.status_ticker) {
-      case 'INITIAL':
-        ticker = <em>UPDATING...</em>
-        break;
-      case 'LOADED':
-        ticker = <div className={'ticker'}>
-          <em>{`Prices as of ${this.state.date}`}</em>
-          <ul>
-            {this.state.coins.map((coin) => {
-              return (
-                <li key={coin.id}>
-                  <div>{coin.name}</div>
-                  <ul>
-                    {coin.data.map(currency => {
-                      return <li key={currency.id}>{currency.price}</li>
-                    })}
-                  </ul>
-                </li>
-              )
-            })}
-          </ul>
-        </div>
-        break;
-    }
 
     return (
       <div>
+        {/*{this.state.response}*/}
         <h1>{this.state.title}</h1>
         {profile}
         <h2>Your Following:</h2>
-        {ticker}
+        {/*{console.log(this.state.coins)}*/}
+        {/*{localStorage.setItem('bleh', JSON.stringify(this.state.coins))}*/}
+        {this.state.coins ? this.state.coins.map((coin) => {
+            return (
+              <li key={coin.id}>
+                <div>{coin.name}</div>
+                <ul>
+                  {coin.prices.map(currency => {
+                    return <li key={currency.id}>
+                      <div>{currency.name}</div>
+                      {currency.data.map(fiat => {
+                          let color = fiat.current < fiat.last ? {backgroundColor: 'green'} : {backgroundColor: 'red'}
+                          return <ol key={fiat.id} style={color}>{fiat.current}</ol>
+                        }
+                      )}
+                    </li>
+
+
+                  })}
+                </ul>
+              </li>
+            )
+          })
+          : <Progress/>}
         <br/>
+        {/*<WatchCoin watchStockHandler={this.watchCoin}/>*/}
+        {/*<CoinTable coins={this.state.coins} last={this.state.last} unwatchCoinHandler={this.unwatchCoin()}/>*/}
         <p><a href="/logout">log out</a></p>
       </div>
     );
@@ -165,7 +334,9 @@ class Profile extends React.Component {
 }
 
 render(
-  <Profile/>,
+  <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
+    <Profile/>
+  </MuiThemeProvider>,
   document.getElementById('profile'));
 
 if (module.hot) {

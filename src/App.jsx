@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import './App.css'
 import Welcome from './views/Welcome/Welcome';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {render} from "react-dom";
 
 class App extends Component {
@@ -24,7 +27,9 @@ class App extends Component {
 }
 
 render(
+  <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
   <App/>
+  </MuiThemeProvider>
   ,
   document.getElementById('app'));
 

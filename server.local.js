@@ -5,7 +5,7 @@ const webpackHotMiddleware = require("webpack-hot-middleware");
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 require('dotenv').config();
-
+const fetch = require('node-fetch');
 
 // mongo
 const User = require('./model/User')
@@ -16,6 +16,7 @@ const db = mongoose.connect(uri);
 // mongoose.connect('mongodb://localhost:27017/cryptory');
 // const db = mongoose.connection
 // logging
+// mongoose.set('debug', true);
 mongoose.Promise = global.Promise;
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
@@ -85,6 +86,7 @@ app.get('/logout',
 app.get('/profile',
   require('connect-ensure-login').ensureLoggedIn(),
   function (req, res) {
+    // console.log('\n\n\nprofile call API', req.user, '\n\n\n')
     res.render('profile', {user: req.user.username});
   });
 
@@ -103,14 +105,16 @@ app.get('/login/github/return',
 //   }
 //   res.render('/profile');
 // });
-app.get('/api/user/:id', (req, res) => {
+app.get('/api/user/:username', (req, res) => {
   require('connect-ensure-login').ensureLoggedIn(),
-    User.findOne(req.id,
+    console.log('\n\n\n\n\napi user call', req.params, '\n\n\n'),
+    User.findOne({username: JSON.parse(req.params.username)},
       function (err, obj) {
         if (err) {
           res.send(err);
           return;
         }
+        console.log({data: obj})
         res.json({data: obj});
       });
 });
@@ -234,9 +238,50 @@ app.get('/api/coin', (req, res) => {
 //     );
 // });
 
+// const feed = require('./server/feed');
+
+const http = require("http");
+const socketIo = require("socket.io");
+const server = http.createServer(app);
+
+const io = socketIo(server);
+
+let interval;
+io.on('connection', socket => {
+  console.log('User connected. Socket id %s', socket.id);
+  if (interval) {
+    clearInterval(interval);
+  }
+  interval = setInterval(() => currencyAPI(socket), 5000);
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+  });
+});
+
+// io.on("connection", socket => {
+//   console.log("New client connected"), setInterval(
+//     () => getApiAndEmit(socket),
+//     10000
+//   );
+//   socket.on("disconnect", () => console.log("Client disconnected"));
+// });
+
+
+
+const currencyAPI = require('./server/currency_api')
+
+// let port = 4000
+const coinPort = 4001
+server.listen(coinPort, () => console.log(`Ticker listening on port ${coinPort}`));
+
+
+// // // feed.start(function (room, type, message) {
+// //   io.to(room).emit(type, message);
+// });
+
 // updating every 30 seconds
-const loadCurrencyData = require('./server/currency_api.js');
-loadCurrencyData();
+// const loadCurrencyData = require('./server/currency_api.js');
+// loadCurrencyData();
 
 // development
 // Tell express to use the webpack-dev-middleware
@@ -249,9 +294,8 @@ app.use(webpackHotMiddleware(compiler));
 
 const port = process.env.PORT || 3000
 
-// Serve the files on port 3000.
 app.listen(port, function () {
-  console.log('Example app listening on port 3000!\n');
+  console.log('Cryptory listening on port 3000!\n');
 });
 
 
