@@ -92,7 +92,7 @@ app.get('/home/:id',
 
 app.get('/api/user/:id', (req, res) => {
   require('connect-ensure-login').ensureLoggedIn(),
-    User.findOne(req.id,
+    User.findOne({username: JSON.parse(req.params.username)},
       function (err, obj) {
         if (err) {
           res.send(err);
