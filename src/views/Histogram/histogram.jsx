@@ -25,22 +25,30 @@ class Histogram extends Component {
 
   componentDidMount = () => {
     //console.error(this.props);
-    //this.modelInstance.addObserver(this)
+    modelInstance.addObserver(this);
     //this.modelInstance.histogramData(slidervalue);
-    this.setState({
-      status: 'LOADED',
-      //histogramdata: modelInstance.histogramData(1),
-      slidervalue: 1,
-      currentCurr: 'BTC'
-    })
+    modelInstance.histogramData("BTC", 1).then(histo =>{ //This goes in update too
+      this.setState({
+        status: 'LOADED',
+        //histogramdata: modelInstance.histogramData(1),
+        slidervalue: 1,
+        currentCurr: 'BTC',
+        histo: histo
+      })
+      }).catch(() => {
+        this.setState({
+          status: 'ERROR'
+        })
+      })
   }
+
   componentWillUnmount = () => {
     modelInstance.removeObserver(this)
   }
 
   update = () => {
     this.setState({
-      histogramdata: modelInstance.histogramData(this.state.slidervalue), 
+      //histogramdata: modelInstance.histogramData(this.state.slidervalue), 
       currentCurr: modelInstance.getCurrentCurr(),
       slidervalue: 1
     })
@@ -89,7 +97,7 @@ class Histogram extends Component {
           <div className='row' id='graphOfSelectedCurrency'>
             <VictoryChart>
               <VictoryLine
-                data={modelInstance.histogramData(this.state.slidervalue)}
+                data={histo}
               />
             </VictoryChart>
             <ReactBootstrapSlider

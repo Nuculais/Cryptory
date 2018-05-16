@@ -114,6 +114,7 @@ const APIetcModel = function () {
     let now = Date.now();
     let historesult = [];
     let Data = this.getHistorical(curr, slidervalue).Data;
+    console.log(Data);  //Returns undefined
     
 
     if (slidervalue === 2) { //week
@@ -198,15 +199,19 @@ const APIetcModel = function () {
     //Limit is the number of data points to return (so 24 for histohour, 7 for a week and 30 for a month).
     
     console.log("getHistorical anropas tydligen.");
+    console.log(curr);
+    console.log(timeperiod);
 
     let url = 'https://min-api.cryptocompare.com/data/'
 
     let datenow = Date.now(); //returns a unix time stamp
+    console.log(datenow);
     let datepast;
     let limit;
 
+    //atm it never evaluates to any of these
     //return data for one week
-    if (timeperiod === '2') {
+    if (timeperiod == 2) {
       limit = 7;
       datepast = new Date();
       datepast.setDay(datepast.getDay() - 7);
@@ -214,18 +219,23 @@ const APIetcModel = function () {
       datepast.setMilliseconds(0);
       datepast = datepast / 1000;
 
-      url += 'histoday?fsym=' + curr + '&tsyms=SEK&limit=' + limit + '&aggregate=1&toTs=' + datenow; //Vafan är det datepast eller datenow?!
+      url += 'histoday?fsym=' + curr + '&tsym=SEK&limit=' + limit + '&aggregate=1&toTs=' + datenow; //Vafan är det datepast eller datenow?!
+      console.log(url);
     }
     //return data for one month
-    else if (timeperiod === '3') {
+    else if (timeperiod == 3) {
       limit = 30;
-      url += 'histoday?fsym=' + curr + '&tsyms=SEK&limit=' + limit + '&aggregate=1&toTs=' + datenow;
+      url += 'histoday?fsym=' + curr + '&tsym=SEK&limit=' + limit + '&aggregate=1&toTs=' + datenow;
+      console.log(url);
     }
     //return data for one day
-    else if (timeperiod === '1') {
+    else if (timeperiod == 1) {
       limit = 24;
-      url += url += 'histohour?fsym=' + curr + '&tsyms=SEK&limit=' + limit + '&aggregate=1&toTs=' + datenow;
+      console.log(limit);
+      url += 'histohour?fsym=' + curr + '&tsym=SEK&limit=' + limit + '&aggregate=1&toTs=' + datenow;
+      console.log(url);
     }
+
 
     return (fetch(url)
       .then(processResponse)
@@ -244,10 +254,10 @@ const APIetcModel = function () {
   const handleError = function (error) {
     if (error.json) {
       error.json().then(error => {
-        console.error('getAllDishes() API Error:', error.message || error)
+        console.error('API Error:', error.message || error)
       })
     } else {
-      console.error('getAllDishes() API Error:', error.message || error)
+      console.error('API Error:', error.message || error)
     }
   }
 
