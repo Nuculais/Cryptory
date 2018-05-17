@@ -107,7 +107,9 @@ const APIetcModel = function () {
     //{x: thing2, y: otherthing2} ]}
     //x = time, y = value of currency.
     //So if slidervalue is set to week, there will be 7 x, one for each day. If it's day, there will be 24 x, one for each hour.
-    //Highest y-point in the histogram needs to be higher than the max value that will be returned from the API. How to do this?!
+    //Highest y-point in the histogram needs to be higher than the max value that will be returned from the API. Different currencies
+    //have completely different values, so the max and min Y-points in the chart (VictoryChart in Histogram.jsx) need to be change according 
+    //to what currency it is. How to do this?
 
     console.log("histogramData() anropas.");
     let curr = this.getCurrentCurr();
