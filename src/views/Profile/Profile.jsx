@@ -57,13 +57,13 @@ class Profile extends React.Component {
             case 'LOADED':
                 profile =
                     <div className="navProfile">
+                        <img src={this.state.user.data.avatar}/>
                         <div className="navProfileText">
                             {this.state.user.data.name}
-                            <br />
-                            <a href="/logout">Log out</a>
+                            <br/>
+                            <a href="/logout">Log out</a><br/><br/>
                         </div>
-                        <img src={this.state.user.data.avatar} />
-                    </div>
+                    </div>;
                 break;
         }
 
@@ -74,28 +74,40 @@ class Profile extends React.Component {
                         Cryptory
                     </div>
                     <div>
-                        {this.state.title}
+                        <h2>Your Following:</h2>
+                        <CoinTable following={this.state.user.following}/>
                     </div>
                     {profile}
                 </div>
-                <div>
+                <div className="myWallet">
                     <h1>{this.state.title}</h1>
-                    <h2>Your Following:</h2>
                     <br/>
-                    <CoinTable following={this.state.user.following}/>
-                    <p></p>
+                    <form>
+                        <label>
+                            Select Currency:
+                        </label>
+                        <select>
+                            <option value="BTC">BTC</option>
+                            <option value="ETH">ETH</option>
+                        </select>
+                        <br/>
+                        <label> Cryptocurreny </label>
+                        <input type="text" disabled value="123123" />
+                    </form>
                 </div>
-            </div>
-        );
-    }
-}
 
-render(
-    <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-        <Profile/>
-    </MuiThemeProvider>,
+            </div>
+    );
+    }
+    }
+
+    render(
+        <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
+            <Profile/>
+        </MuiThemeProvider>
+    ,
     document.getElementById('profile'));
 
-if (module.hot) {
-    module.hot.accept();
-}
+    if (module.hot) {
+        module.hot.accept();
+    }

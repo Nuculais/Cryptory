@@ -1,33 +1,39 @@
 .navbar{
-    height: 50px;
+    height: 100%;
     background-color: aliceblue;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+    display: grid;
+    grid-template-rows: 1fr 1fr auto;
+    justify-content: space-evenly;
     color: black;
-    padding: 0 10px;
+    padding: 10px;
 }
 
 .pageLayout{
     height: 100%;
     width: 100%;
+    margin: 0 !important;
     display: grid;
-    grid-template-rows: auto 1fr;
+    grid-template-columns: 360px 1fr;
+    overflow: hidden;
 
 }
 .navProfile{
     height:100%;
     display: flex;
-    align-items: center;
+    justify-self: left;
 }
 .navProfileText{
     margin: 0 10px;
-    text-align: right;
+    text-align: left;
 }
 .navProfile > img{
     height: 40px;
     width: 40px;
     border-radius: 50px;
     object-fit: cover;
+}
+
+.myWallet {
+    margin: 10px;
+
 }
