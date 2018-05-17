@@ -1,0 +1,33 @@
+.navbar{
+    height: 50px;
+    background-color: aliceblue;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    color: black;
+    padding: 0 10px;
+}
+
+.pageLayout{
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-rows: auto 1fr;
+
+}
+.navProfile{
+    height:100%;
+    display: flex;
+    align-items: center;
+}
+.navProfileText{
+    margin: 0 10px;
+    text-align: right;
+}
+.navProfile > img{
+    height: 40px;
+    width: 40px;
+    border-radius: 50px;
+    object-fit: cover;
+}

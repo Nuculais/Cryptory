@@ -1,5 +1,4 @@
 import React from 'react'
-import CoinRow from "./CoinRow";
 import socketIOClient from "socket.io-client";
 import Progress from '../Progress/Progress'
 
