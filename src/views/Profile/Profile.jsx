@@ -9,7 +9,7 @@ import socketIOClient from "socket.io-client";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import './Profile.css'
+import './Profile.css';
 
 
 class Profile extends React.Component {
@@ -71,7 +71,7 @@ class Profile extends React.Component {
             <div className="pageLayout">
                 <div className="navbar">
                     <div>
-                        Cryptory
+                        <img src="https://i.imgur.com/s5krUs0.png" width="100%"/>
                     </div>
                     <div>
                         <h2>Your Following:</h2>
@@ -80,7 +80,7 @@ class Profile extends React.Component {
                     {profile}
                 </div>
                 <div className="myWallet">
-                    <h1>{this.state.title}</h1>
+                    <h1 align="center">{this.state.title}</h1>
                     <br/>
                     <form>
                         <label>
@@ -90,9 +90,18 @@ class Profile extends React.Component {
                             <option value="BTC">BTC</option>
                             <option value="ETH">ETH</option>
                         </select>
-                        <br/>
+                        <br/><br/>
                         <label> Cryptocurreny </label>
                         <input type="text" disabled value="123123" />
+                        <br/><br/>
+                        <label> Current Amount </label>
+                        <input type="text" />
+                        <br/><br/>
+                        <label> Last Updated: </label>
+                        <br/><br/>
+                        <label> History of Purchases: </label>
+                        <br/><br/>
+                        <input type="button" value="Update Wallet to Current Value"/>
                     </form>
                 </div>
 
