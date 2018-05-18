@@ -18,7 +18,8 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          <h1 className="App-title container-fluid">{this.state.title}</h1>
+          <img className="welcomeLogo" src="https://i.imgur.com/s5krUs0.png"/>
+            <h2> Get ready to maintain your crypto transactions..</h2>
           <Welcome/>
         </header>
       </div>
