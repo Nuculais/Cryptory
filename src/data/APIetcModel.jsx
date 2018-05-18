@@ -14,6 +14,13 @@ const APIetcModel = function () {
     type: "",
     amount: 0
   };
+    //A transaction. Gets stored in Transactions[]
+    let Transaction = {
+    date: null, //Unix timestamp. Use Date.now();
+    type: "",
+    amount: 0,
+    originalValue: 0 //What that amount cost when buying. In Sek.
+  };
 
   //Converts a date to a unix timestamp. Example: year=2017, month=08, day=16 will be 1502841600. Must be in that format.
   this.getUnixTime = function (year, month, day) {
@@ -39,13 +46,7 @@ const APIetcModel = function () {
     return HistogramData;
   }
 
-  //A transaction. Gets stored in Transactions[]
-  let Transaction = {
-    date: null, //Unix timestamp. Use Date.now();
-    type: "",
-    amount: 0,
-    originalValue: 0 //What that amount cost when buying. In Sek.
-  };
+
 
   this.getCurrency = function (ty, am) {
     let curr = Object.create(Currency);
@@ -69,12 +70,8 @@ const APIetcModel = function () {
     alert("Transaction registered!");
   }
 
-  this.toWalletToo = function (tran){
-
-  }
-
   //Adds or subtracts bought currency from the wallet.
-  this.addToWallet = function (coin, amount) {
+  this.addToWallet = function (amount) {
     //curr is a Currency object from a recent transaction. curr.amount can be negative (indicating selling, positive indicating buying)
 
     let coin = this.getCurrentCurr();
@@ -89,10 +86,6 @@ const APIetcModel = function () {
       }
       notifyObservers();
     }
-  }
-
-  this.addTransaction = function (tra) {
-    Transactions.push(tra);
   }
 
 
