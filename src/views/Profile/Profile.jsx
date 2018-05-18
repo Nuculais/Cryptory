@@ -23,6 +23,8 @@ class Profile extends React.Component {
             user: '',
             currentCurr: 'BTC',
             transactionamount: 0,
+            walletValue: 0, //Total value of everything in the wallet
+            walletChange: 0, //The total earn/loss
         }
         this.newTransaction = this.newTransaction.bind(this);
     }
@@ -56,22 +58,29 @@ class Profile extends React.Component {
     newCurr = (e) => {
     modelInstance.setCurrentCurr(e.target.value);
     this.setState({currentCurr: e.target.value});
-  };
+    };
 
-  newAmount = (e) => {
-      this.setState({transactionamount: e.target.value});
-  }
+    newAmount = (e) => {
+        this.setState({transactionamount: e.target.value});
+    };
 
-  newTransaction() {
-      modelInstance.makeNewTransaction(this.state.transactionamount);
-  };
+    newTransaction() {
+        modelInstance.makeNewTransaction(this.state.transactionamount);
+    };
+
+    walletUpdate() {
+        this.setState({walletValue: modelInstance.getCurrentWalletValue(),
+            walletChange: modelInstance.getComparison(all)
+        });
+    };
 
 
     update(){
         this.setState({
             currentCurr: modelInstance.getCurrentCurr(),
-            walletValue: modelInstance.getWallet()
-        })
+            walletValue: modelInstance.getWallet(),
+            walletChange: modelInstance.getComparison(all)
+        });
     }
 
     render() {
@@ -109,6 +118,10 @@ class Profile extends React.Component {
                     <h1 align="center">{this.state.title}</h1>
                     <br/>
                     <form>
+                        <p>Total value of all cryptocurrencies in wallet: {this.state.walletValue} Euro</p>
+                        <p>Earnings/Losses: {this.state.walletChange} Euro</p>
+                        <br/>
+
                         <label>
                             Select currency:
                         </label>
@@ -125,14 +138,15 @@ class Profile extends React.Component {
                             <option value='NEO'>NEO</option>
                         </select>                        
                         <p>Selected currency: {this.state.currentCurr}</p>
-                        <h1>Add new transaction</h1>
+                        <h3>Add new transaction</h3>
                         <label> Amount </label>
-                        <br/><br/>
-                        <label>Positive value if you're buying, negative if you're selling</label>
-                        <br/><br/>
+                        <br/>
+                        <label>A positive value if you're buying, negative if you're selling</label>
+                        <br/>
                         <input id="transactionamount" type="text" onChange={this.newAmount}/>
                         <br/><br/>
                         <input type="button" value="Add transaction and update wallet" onClick={this.newTransaction}/>
+
                         <br/><br/>
                         <br/><br/>
                         <br/><br/>

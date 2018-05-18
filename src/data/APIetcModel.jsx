@@ -19,7 +19,7 @@ const APIetcModel = function () {
     date: null, //Unix timestamp. Use Date.now();
     type: "",
     amount: 0,
-    originalValue: 0 //What that amount cost when buying. In Sek.
+    originalValue: 0 //What that amount cost when buying. In euro.
   };
 
   //Converts a date to a unix timestamp. Example: year=2017, month=08, day=16 will be 1502841600. Must be in that format.
@@ -48,6 +48,7 @@ const APIetcModel = function () {
 
 
 
+
   this.getCurrency = function (ty, am) {
     let curr = Object.create(Currency);
     curr.type = ty;
@@ -68,6 +69,7 @@ const APIetcModel = function () {
     Transactions.push(tra);
 
     alert("Transaction registered!");
+    console.log(Transactions[0]);
   }
 
   //Adds or subtracts bought currency from the wallet.
@@ -88,7 +90,6 @@ const APIetcModel = function () {
     }
   }
 
-
   this.getWallet = function () {
     return Wallet;
   }
@@ -97,12 +98,19 @@ const APIetcModel = function () {
   this.getCurrentWalletValue = function () {
     this.totalwallet = Wallet;
     let currenttotal = 0;
+
+    if(Wallet.length > 0){
     for (let c = 0; c < totalwallet.length; c++) {
       let currCost = this.getCurrentPrice(totalwallet[c].type);
       let usertot = currCost * totalwallet[c].amount;
       currenttotal += usertot;
     }
     return currenttotal;
+  }
+  else{
+    return 0;
+  
+  }
   }
 
 
@@ -121,32 +129,41 @@ const APIetcModel = function () {
     let curr = this.getCurrentCurr();
     let now = Date.now();
     let historesult = [];
-    let Data = this.getHistorical(curr, slidervalue).Data;
-    console.log(Data);  //Returns undefined
-    
+    this.getHistorical(curr, slidervalue).then((response)=>{
+      let Data = response.Data;
+      var elem;
 
-    if (slidervalue === 2) { //week
-      for (let i = 0; i < Data.length; i++) {
-        //x = 'Day '+i, y=Data[i].close
-        elem = {x: 'Day ' + i, y: Data[i].close}; //Can this be done? (Viktor says yes)
-        historesult.push(elem);
+      if (slidervalue === 2) { //week
+        for (let i = 0; i < Data.length; i++) {
+          //x = 'Day '+i, y=Data[i].close
+          elem = {x: 'Day ' + i, y: Data[i].close}; //Can this be done? (Viktor says yes)
+          historesult.push(elem);
+        }
       }
-    }
-    else if (slidervalue === 3) { //month
-      for (let i = 0; i < Data.length; i++) {
-        //x = 'Day '+i, y=Data[i].close
-        elem = {x: 'Day ' + i, y: Data[i].close};
-        historesult.push(elem);
+      else if (slidervalue === 3) { //month
+        for (let i = 0; i < Data.length; i++) {
+          //x = 'Day '+i, y=Data[i].close
+          elem = {x: 'Day ' + i, y: Data[i].close};
+          historesult.push(elem);
+        }
       }
-    }
-    else if (slidervalue === 1) { //day
-      for (let i = 0; i < Data.length; i++) {
-        //x = 'Day '+i, y=Data[i].close
-        elem = {x: 'Hour ' + i, y: Data[i].close};
-        historesult.push(elem);
+      else if (slidervalue === 1) { //day
+        for (let i = 0; i < Data.length; i++) {
+          //x = 'Day '+i, y=Data[i].close
+          elem = {x: 'Hour ' + i, y: Data[i].close};
+          historesult.push(elem);
+        }
       }
-    }
-    return historesult;
+      console.log(historesult);
+      //return historesult;
+      return new Promise((resolve, reject) => {
+        if (historesult.length > 0) {
+          resolve(historesult)
+        } else {
+          reject("Error")
+        }
+      })
+    });
   }
 
 
@@ -187,7 +204,7 @@ const APIetcModel = function () {
 
     let tran = this.Transactions;
     let profit = 0;
-
+    if(tran.length > 0){
     if (what === all) {
       for (let i = 0; i < tran.length; i++) {
         profit += (tran[i].originalValue * tran[i].amount) - (this.getCurrentPrice(tran[i].type, 'SEK') * tran[i].amount);
@@ -200,6 +217,11 @@ const APIetcModel = function () {
         }
       }
     }
+    return profit;
+  }
+  else{
+    return 0;
+  }
   }
 
   this.getHistorical = function (curr, timeperiod) {
