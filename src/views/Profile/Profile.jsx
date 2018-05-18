@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import {render} from "react-dom";
-import {modelInstance} from '../../data/APIetcModel';
+import {modelInstance} from '../../data/APIetcModel.jsx';
 import Progress from '../Progress/Progress'
 // import WatchCoin from '../Ticker/WatchCoin'
 import CoinTable from '../Ticker/CoinTable'
@@ -22,7 +22,9 @@ class Profile extends React.Component {
             status_ticker: 'INITIAL',
             user: '',
             currentCurr: 'BTC',
+            transactionamount: 0,
         }
+        this.newTransaction = this.newTransaction.bind(this);
     }
 
     // TODO: pull user preferences into
@@ -34,7 +36,7 @@ class Profile extends React.Component {
                     this.setState({
                         status_prof: 'LOADED',
                         user: data,
-                        currentCurr: this.modelInstance.getCurrentCurr()
+                        currentCurr: modelInstance.getCurrentCurr()
                     });
                 });
             } else {
@@ -52,15 +54,23 @@ class Profile extends React.Component {
     }
 
     newCurr = (e) => {
-    this.modelInstance.setCurrentCurr(e.target.value);
+    modelInstance.setCurrentCurr(e.target.value);
     this.setState({currentCurr: e.target.value});
+  };
+
+  newAmount = (e) => {
+      this.setState({transactionamount: e.target.value});
   }
+
+  newTransaction() {
+      modelInstance.makeNewTransaction(this.state.transactionamount);
+  };
 
 
     update(){
         this.setState({
-            currentCurr: this.modelInstance.getCurrentCurr(),
-            walletValue: this.modelInstance.getWallet()
+            currentCurr: modelInstance.getCurrentCurr(),
+            walletValue: modelInstance.getWallet()
         })
     }
 
@@ -113,14 +123,18 @@ class Profile extends React.Component {
                             <option value='LTC'>Litecoin</option>
                             <option value='EOS'>EOS</option>
                             <option value='NEO'>NEO</option>
-                        </select>
-                        <br/><br/>
+                        </select>                        
                         <p>Selected currency: {this.state.currentCurr}</p>
                         <h1>Add new transaction</h1>
                         <label> Amount </label>
-                        <input type="text" disabled value="Positive value if you're buying, negative if you're selling" />
                         <br/><br/>
-                        <input type="button" value="Add transaction and update wallet"/>
+                        <label>Positive value if you're buying, negative if you're selling</label>
+                        <br/><br/>
+                        <input id="transactionamount" type="text" onChange={this.newAmount}/>
+                        <br/><br/>
+                        <input type="button" value="Add transaction and update wallet" onClick={this.newTransaction}/>
+                        <br/><br/>
+                        <br/><br/>
                         <br/><br/>
 
 

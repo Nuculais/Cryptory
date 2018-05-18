@@ -32,7 +32,7 @@ const APIetcModel = function () {
   //Used in the histogram view
   this.setCurrentCurr = function (type) {
     currentCurr = type;
-    update();
+    notifyObservers();
   }
 
   this.getCurrentCurr = function () {
