@@ -1,6 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import {render} from "react-dom";
+import {modelInstance} from '../../data/APIetcModel';
 import Progress from '../Progress/Progress'
 // import WatchCoin from '../Ticker/WatchCoin'
 import CoinTable from '../Ticker/CoinTable'
@@ -20,6 +21,7 @@ class Profile extends React.Component {
             status_prof: 'INITIAL',
             status_ticker: 'INITIAL',
             user: '',
+            currentCurr: 'BTC',
         }
     }
 
@@ -31,7 +33,8 @@ class Profile extends React.Component {
                 response.json().then(data => {
                     this.setState({
                         status_prof: 'LOADED',
-                        user: data
+                        user: data,
+                        currentCurr: this.modelInstance.getCurrentCurr()
                     });
                 });
             } else {
@@ -46,6 +49,19 @@ class Profile extends React.Component {
 
     componentDidMount = () => {
         this.loadProfileData()
+    }
+
+    newCurr = (e) => {
+    this.modelInstance.setCurrentCurr(e.target.value);
+    this.setState({currentCurr: e.target.value});
+  }
+
+
+    update(){
+        this.setState({
+            currentCurr: this.modelInstance.getCurrentCurr(),
+            walletValue: this.modelInstance.getWallet()
+        })
     }
 
     render() {
@@ -74,7 +90,7 @@ class Profile extends React.Component {
                         <img src="https://i.imgur.com/s5krUs0.png" width="100%"/>
                     </div>
                     <div>
-                        <h2>Your Following:</h2>
+                        <h2>You're following:</h2>
                         <CoinTable following={this.state.user.following}/>
                     </div>
                     {profile}
@@ -84,17 +100,35 @@ class Profile extends React.Component {
                     <br/>
                     <form>
                         <label>
-                            Select Currency:
+                            Select currency:
                         </label>
-                        <select>
-                            <option value="BTC">BTC</option>
-                            <option value="ETH">ETH</option>
+                        <select onChange={this.newCurr}>
+                            <option value='BTC'>Bitcoin</option>
+                            <option value='ETH'>Ethereum</option>
+                            <option value='DOGE'>Dogecoin</option>
+                            <option value='XRP'>Ripple</option>
+                            <option value='ADA'>Cardano</option>
+                            <option value='TRX'>Tron</option>
+                            <option value='XVG'>Verge</option>
+                            <option value='LTC'>Litecoin</option>
+                            <option value='EOS'>EOS</option>
+                            <option value='NEO'>NEO</option>
                         </select>
                         <br/><br/>
-                        <label> Cryptocurreny </label>
+                        <p>Selected currency: {this.state.currentCurr}</p>
+                        <h1>Add new transaction</h1>
+                        <label> Amount </label>
+                        <input type="text" disabled value="Positive value if you're buying, negative if you're selling" />
+                        <br/><br/>
+                        <input type="button" value="Add transaction and update wallet"/>
+                        <br/><br/>
+
+
+
+                        <label> Cryptocurrency: </label>
                         <input type="text" disabled value="123123" />
                         <br/><br/>
-                        <label> Current Amount </label>
+                        <label> Current Amount: </label>
                         <input type="text" />
                         <br/><br/>
                         <label> Last Updated: </label>
