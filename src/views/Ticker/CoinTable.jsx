@@ -1,12 +1,26 @@
 import React from 'react'
+import {connect} from 'react-redux'
 import CoinRow from "./CoinRow";
 import socketIOClient from "socket.io-client";
 import Progress from '../Progress/Progress'
+import {actionCreators} from "../../cryptoryRedux";
 
-export default class CoinTable extends React.Component {
+const mapStateToProps = (state) => ({
+  profile: state,
+  endpoint: state.endpointTicker
+})
+
+const mapDispatchToProps = (dispatch) => ({
+  // loadProfile: id => {
+  //   dispatch(actionCreators.fetchUser(id))
+  // }
+})
+
+class CoinTable extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
+      coins: [],
       currencies: {
         'BTC': {
           'SEK': {
@@ -21,13 +35,42 @@ export default class CoinTable extends React.Component {
             'current': '',
             'last': ''
           }
+        },
+        'ETH': {
+          'SEK': {
+            'current': '',
+            'last': '',
+          },
+          'USD': {
+            'current': '',
+            'last': ''
+          },
+          'EUR': {
+            'current': '',
+            'last': ''
+          }
+        },
+        'ALT': {
+          'SEK': {
+            'current': '',
+            'last': '',
+          },
+          'USD': {
+            'current': '',
+            'last': ''
+          },
+          'EUR': {
+            'current': '',
+            'last': ''
+          }
         }
-      },
-      endpoint: "http://localhost:4001"
+      }
     }
   }
+
   componentDidMount() {
-    const endpoint = this.state.endpoint;
+    console.log('cointable props', this.props)
+    const endpoint = this.props.endpoint;
     const socket = socketIOClient(endpoint);
     this.setState({status_ticker: 'INITIAL'})
     socket.on("coins", data => {
@@ -47,7 +90,35 @@ export default class CoinTable extends React.Component {
               last: this.state.currencies['BTC']['EUR']['current'],
               current: data.BTC.EUR
             }
-          }
+          },
+          'ETH': {
+            'SEK': {
+              last: this.state.currencies['ETH']['SEK']['current'],
+              current: data.BTC.SEK
+            },
+            'USD': {
+              last: this.state.currencies['ETH']['USD']['current'],
+              current: data.BTC.USD
+            },
+            'EUR': {
+              last: this.state.currencies['ETH']['EUR']['current'],
+              current: data.BTC.EUR
+            }
+          },
+          'ALT': {
+            'SEK': {
+              last: this.state.currencies['ALT']['SEK']['current'],
+              current: data.BTC.SEK
+            },
+            'USD': {
+              last: this.state.currencies['ALT']['USD']['current'],
+              current: data.BTC.USD
+            },
+            'EUR': {
+              last: this.state.currencies['ALT']['EUR']['current'],
+              current: data.BTC.EUR
+            }
+          },
         },
         coins: [
           {
@@ -93,6 +164,101 @@ export default class CoinTable extends React.Component {
                   {
                     id: 2,
                     last: this.state.currencies['BTC']['USD']['last']
+                  }
+                ],
+              }
+            ]
+          }, {
+            id: 2,
+            name: 'ETH',
+            prices: [
+              {
+                id: 1,
+                name: 'SEK',
+                data: [
+                  {
+                    id: 1,
+                    current: this.state.currencies['ETH']['SEK']['current'],
+                  },
+                  {
+                    id: 2,
+                    last: this.state.currencies['ETH']['SEK']['last']
+                  }
+                ],
+              },
+              {
+                id: 2,
+                name: 'EUR',
+                data: [
+                  {
+                    id: 1,
+                    current: this.state.currencies['ETH']['EUR']['current'],
+                  },
+                  {
+                    id: 2,
+                    last: this.state.currencies['ETH']['EUR']['last']
+                  }
+                ],
+              },
+              {
+                id: 3,
+                name: 'USD',
+                data: [
+                  {
+                    id: 1,
+                    current: this.state.currencies['ETH']['USD']['current'],
+                  },
+                  {
+                    id: 2,
+                    last: this.state.currencies['ETH']['USD']['last']
+                  }
+                ],
+              }
+            ]
+          },
+          {
+            id: 3,
+            name: 'ALT',
+            prices: [
+              {
+                id: 1,
+                name: 'SEK',
+                data: [
+                  {
+                    id: 1,
+                    current: this.state.currencies['ALT']['SEK']['current'],
+                  },
+                  {
+                    id: 2,
+                    last: this.state.currencies['ALT']['SEK']['last']
+                  }
+                ],
+              },
+              {
+                id: 2,
+                name: 'EUR',
+                data: [
+                  {
+                    id: 1,
+                    current: this.state.currencies['ALT']['EUR']['current'],
+                  },
+                  {
+                    id: 2,
+                    last: this.state.currencies['ALT']['EUR']['last']
+                  }
+                ],
+              },
+              {
+                id: 3,
+                name: 'USD',
+                data: [
+                  {
+                    id: 1,
+                    current: this.state.currencies['ALT']['USD']['current'],
+                  },
+                  {
+                    id: 2,
+                    last: this.state.currencies['ALT']['USD']['last']
                   }
                 ],
               }
@@ -234,6 +400,7 @@ export default class CoinTable extends React.Component {
                     return <li key={currency.id}>
                       <div>{currency.name}</div>
                       {currency.data.map(fiat => {
+                        // console.log('iat', fiat)
                           let color = fiat.current < fiat.last ? {backgroundColor: 'green'} : {backgroundColor: 'red'}
                           return <ol key={fiat.id} style={color}>{fiat.current}</ol>
                         }
@@ -267,3 +434,5 @@ export default class CoinTable extends React.Component {
     );
   }
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(CoinTable)

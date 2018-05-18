@@ -1,86 +1,85 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
-import {render} from "react-dom";
 import Progress from '../Progress/Progress'
-// import WatchCoin from '../Ticker/WatchCoin'
+import Sidebar from '../Sidebar/Sidebar'
 import CoinTable from '../Ticker/CoinTable'
-// import feed from '../../feed-socket.io'
+import Chatroom from '../Chatroom/Chatroom'
+import {connect} from 'react-redux'
+import {actionCreators} from '../../cryptoryRedux.jsx'
+import {Grid, Row, Col} from 'react-flexbox-grid';
+import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
+import RaisedButton from 'material-ui/RaisedButton';
+import {Card} from 'material-ui/Card'
+import TextField from 'material-ui/TextField';
+import Divider from 'material-ui/Divider';
+import Paper from 'material-ui/Paper';
+import Checkbox from 'material-ui/Checkbox';
 import socketIOClient from "socket.io-client";
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
+const mapStateToProps = (state) => ({
+  profile: state,
+  name: state.user.name,
+  endpoint: state.endpointChat,
+  message: state.message
+})
+
+const mapDispatchToProps = (dispatch) => ({
+  loadProfile: id => {
+    dispatch(actionCreators.fetchUser(id))
+  },
+  sendMessage: (usr, msg, avatar) => {
+    dispatch(actionCreators.sendMessage(usr, msg, avatar))
+  },
+})
 
 class Profile extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      title: 'Cryptory Profile',
-      status_prof: 'INITIAL',
-      status_ticker: 'INITIAL',
-      user: '',
+
+  componentDidMount() {
+    if (localStorage.getItem('user')) {
+      this.props.loadProfile(localStorage.getItem('user'))
+    }
+    if (!this.props.loginStatus) {
+      this.props.loadProfile(user.data)
+      localStorage.setItem('user', user.data)
     }
   }
 
-  // TODO: pull user preferences into
-  loadProfileData = () => {
-    console.log('props', user.data)
-    fetch(`api/user/${user.data}`).then(response => {
-      if (response.ok) {
-        response.json().then(data => {
-          this.setState({
-            status_prof: 'LOADED',
-            user: data
-          });
-        });
-      } else {
-        response.json().then(error => {
-          alert("Failed to fetch issues:" + error.message)
-        });
-      }
-    }).catch(err => {
-      alert("Error in fetching user data from server:", err);
-    });
-  };
-
-  componentDidMount = () => {
-    this.loadProfileData()
+  sendMessage = event => {
+    event.preventDefault()
+    console.log('handle send props', event)
+    const socket = socketIOClient(this.props.endpoint);
+    socket.emit("chat", this.props.message)
+    const avatar = this.props.profile.user.avatar.replace(/(^\w+:|^)\/\//, '');
+    this.props.sendMessage(this.props.username, this.props.message, avatar)
   }
 
   render() {
     let profile;
-    switch (this.state.status_prof) {
+    switch (this.props.profile.status) {
       case 'INITIAL':
         profile = <Progress/>
         break;
       case 'LOADED':
         profile =
           <div>
-            <h3>Welcome, {this.state.user.data.name}!</h3>
-            <img src={this.state.user.data.avatar}/>
-         </div>
-        break;
+            <h3>Welcome, {this.props.profile.user.name}!</h3>
+            <img src={this.props.profile.user.avatar}/>
+          </div>
+        break
+      default:
+        profile = <em>there was an error loading the profile</em>
     }
-
     return (
       <div>
-        <h1>{this.state.title}</h1>
+        <Sidebar/>
         {profile}
         <h2>Your Following:</h2>
         <br/>
-        <CoinTable following={this.state.user.following}/>
+        <Chatroom send={this.sendMessage}/>
+        {/*<CoinTable following={this.props.profile.user.following}/>*/}
         <p><a href="/logout">log out</a></p>
       </div>
     );
   }
 }
 
-render(
-  <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-    <Profile/>
-  </MuiThemeProvider>,
-  document.getElementById('profile'));
-
-if (module.hot) {
-  module.hot.accept();
-}
+export default connect(mapStateToProps, mapDispatchToProps)(Profile)

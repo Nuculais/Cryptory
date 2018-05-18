@@ -28,7 +28,7 @@ class App extends Component {
 
 render(
   <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-  <App/>
+    <App/>
   </MuiThemeProvider>
   ,
   document.getElementById('app'));

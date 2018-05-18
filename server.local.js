@@ -10,6 +10,7 @@ const fetch = require('node-fetch');
 // mongo
 const User = require('./model/User')
 const Coin = require('./model/Coin')
+const Chats = require('./model/Chats')
 const mongoose = require('mongoose')
 const uri = `mongodb://${encodeURIComponent('cryptoryadmin')}:${encodeURIComponent('cryptory123456789')}@ds247569.mlab.com:47569/heroku_d783vzs7`
 const db = mongoose.connect(uri);
@@ -48,7 +49,7 @@ app.set('view engine', 'ejs');
 app.use(helmet());
 app.use(require('morgan')('combined'));
 app.use(require('cookie-parser')('alcovewonderwhy99save'));
-// app.use(require('body-parser').urlencoded({extended: true}));
+app.use(require('body-parser').urlencoded({extended: true}));
 app.use(require('express-session')({
   secret: 'keyboardcatanalyze',
   resave: true,
@@ -58,7 +59,7 @@ app.use(require('express-session')({
   proxy: true,
   maxAge: 54000000
 }));
-app.use(bodyParser.json())
+// app.use(bodyParser.json())
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -107,15 +108,13 @@ app.get('/login/github/return',
 // });
 app.get('/api/user/:username', (req, res) => {
   require('connect-ensure-login').ensureLoggedIn(),
-    console.log('\n\n\n\n\napi user call', req.params, '\n\n\n'),
     User.findOne({username: JSON.parse(req.params.username)},
       function (err, obj) {
         if (err) {
           res.send(err);
           return;
         }
-        console.log({data: obj})
-        res.json({data: obj});
+        res.json(obj);
       });
 });
 
@@ -257,6 +256,85 @@ io.on('connection', socket => {
     console.log("Client disconnected");
   });
 });
+const coinPort = 4001
+server.listen(coinPort, () => console.log(`Ticker listening on port ${coinPort}`));
+const currencyAPI = require('./server/currency_api')
+
+// chat calls
+const io2 = socketIo(server);
+io2.on('connection', socket => {
+  console.log('\n\n\n\nUser connected. Socket id', socket.id);
+  socket.on('chat', function (msg) {
+    console.log('emit')
+    socket.broadcast.emit('chat', msg);
+  });
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+  });
+});
+
+const chatPort = 4002
+server.listen(chatPort, () => console.log(`Chatroom listening on port ${chatPort}`));
+
+
+app.get("/chats", (req, res) => {
+  Chats.find({}, (error, chats) => {
+    if (error) {
+      res.send(error)
+    }
+    else {
+      res.send(chats)
+    }
+  }).sort({'date': -1}).limit(10)
+})
+
+app.put('/chats/:usr/:msg', async (req, res) => {
+  let chat;
+  try {
+    chat = new Chats({name: req.params.usr, chat: req.params.msg});
+    console.log('\n\n\nchat object', chat, '\n\n\n')
+    chat.save()
+    res.sendStatus(200)
+    io.emit("chat", req.params.msg)
+  } catch (error) {
+    res.status(500).json({message: `format: ${error}`});
+  }
+  // db.collection('issues').update({ _id: issueId },  Issue.convertIssue(issue)).then(() =>
+  // db.collection('issues').find({ _id: issueId }).limit(1)
+  //   .next() )
+  //   .then(savedIssue => {
+  //     res.json(savedIssue);
+  //   })
+  //   .catch(error => {
+  //     console.log(error);
+  //     res.status(500).json({ message: `Internal Server Error: ${error}` });
+  //   });
+});
+//Loop through each of the chat data and insert into the database
+// for (var c = 0; c < chatData.length; c++) {
+//   //Create an instance of the chat model
+//   var newChat = new Chat(chatData[c]);
+//   //Call save to insert the chat
+//   newChat.save(function(err, savedChat) {
+//     console.log(savedChat);
+//   });
+// }
+// //Send a resoponse so the serve would not get stuck
+// res.send('created');
+
+
+// app.post("/chats", async (req, res) => {
+//   const chat = new Chats(req.body)
+//   console.log('\n\n\n\nchat created in api call', 'raw data:', req.body, '\n\n\n\n\n')
+//   try {
+//     await chat.save()
+//     res.sendStatus(200)
+//     io.emit("chat", req.body)
+//   } catch (error) {
+//     res.sendStatus(500)
+//     console.error(error)
+//   }
+// })
 
 // io.on("connection", socket => {
 //   console.log("New client connected"), setInterval(
@@ -265,14 +343,6 @@ io.on('connection', socket => {
 //   );
 //   socket.on("disconnect", () => console.log("Client disconnected"));
 // });
-
-
-
-const currencyAPI = require('./server/currency_api')
-
-// let port = 4000
-const coinPort = 4001
-server.listen(coinPort, () => console.log(`Ticker listening on port ${coinPort}`));
 
 
 // // // feed.start(function (room, type, message) {
