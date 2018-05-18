@@ -115,32 +115,41 @@ const APIetcModel = function () {
     let curr = this.getCurrentCurr();
     let now = Date.now();
     let historesult = [];
-    let Data = this.getHistorical(curr, slidervalue).Data;
-    console.log(Data);  //Returns undefined
-    
+    this.getHistorical(curr, slidervalue).then((response)=>{
+      let Data = response.Data;
+      var elem;
 
-    if (slidervalue === 2) { //week
-      for (let i = 0; i < Data.length; i++) {
-        //x = 'Day '+i, y=Data[i].close
-        elem = {x: 'Day ' + i, y: Data[i].close}; //Can this be done? (Viktor says yes)
-        historesult.push(elem);
+      if (slidervalue === 2) { //week
+        for (let i = 0; i < Data.length; i++) {
+          //x = 'Day '+i, y=Data[i].close
+          elem = {x: 'Day ' + i, y: Data[i].close}; //Can this be done? (Viktor says yes)
+          historesult.push(elem);
+        }
       }
-    }
-    else if (slidervalue === 3) { //month
-      for (let i = 0; i < Data.length; i++) {
-        //x = 'Day '+i, y=Data[i].close
-        elem = {x: 'Day ' + i, y: Data[i].close};
-        historesult.push(elem);
+      else if (slidervalue === 3) { //month
+        for (let i = 0; i < Data.length; i++) {
+          //x = 'Day '+i, y=Data[i].close
+          elem = {x: 'Day ' + i, y: Data[i].close};
+          historesult.push(elem);
+        }
       }
-    }
-    else if (slidervalue === 1) { //day
-      for (let i = 0; i < Data.length; i++) {
-        //x = 'Day '+i, y=Data[i].close
-        elem = {x: 'Hour ' + i, y: Data[i].close};
-        historesult.push(elem);
+      else if (slidervalue === 1) { //day
+        for (let i = 0; i < Data.length; i++) {
+          //x = 'Day '+i, y=Data[i].close
+          elem = {x: 'Hour ' + i, y: Data[i].close};
+          historesult.push(elem);
+        }
       }
-    }
-    return historesult;
+      console.log(historesult);
+      //return historesult;
+      return new Promise((resolve, reject) => {
+        if (historesult.length > 0) {
+          resolve(historesult)
+        } else {
+          reject("Error")
+        }
+      })
+    });
   }
 
 

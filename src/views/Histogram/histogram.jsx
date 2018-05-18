@@ -24,11 +24,14 @@ class Histogram extends Component {
   }
 
   componentDidMount = () => {
+    let _this = this
     //console.error(this.props);
     modelInstance.addObserver(this);
     //this.modelInstance.histogramData(slidervalue);
-    modelInstance.histogramData("BTC", 1).then(histo =>{ //This goes in update too
-      this.setState({
+    //Arvids förslag: Gör ett anrop till getHistorical direkt. Gör två versioner av histogramData. Den ena kan anropas i början, den andra när det har laddat, för att undvika unresolved promises.
+    modelInstance.histogramData(1).then((histo) =>{ //This goes in update too
+      
+      _this.setState({
         status: 'LOADED',
         //histogramdata: modelInstance.histogramData(1),
         slidervalue: 1,
@@ -36,7 +39,7 @@ class Histogram extends Component {
         histo: histo
       })
       }).catch(() => {
-        this.setState({
+        _this.setState({
           status: 'ERROR'
         })
       })
@@ -59,7 +62,7 @@ class Histogram extends Component {
     this.setState({currentCurr: e.target.value});
   }
 
-  OnSliderChangeValue(e) {
+  OnSliderChangeValue = (e) => {
     this.setState({ slidervalue: e.target.value });
   }
 
