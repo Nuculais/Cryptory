@@ -25,9 +25,6 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: '!!raw-loader!./views/home.ejs'
     }),
-    new HtmlWebpackPlugin({
-      template: '!!raw-loader!./views/profile.ejs'
-    }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
   ],
