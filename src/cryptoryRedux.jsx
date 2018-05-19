@@ -24,12 +24,18 @@ export const types = {
   SAVE_USER: "SAVE_USER",
   FETCH_CHATS: "FETCH_CHATS",
   ADD_MESSAGE: "ADD_MESSAGE",
+  ADD_MESSAGE_HISTORY: "ADD_MESSAGE_HISTORY",
   PROFILE_STATUS: "PROFILE_STATUS",
-  SEND_CHAT: "SEND_CHAT"
+  SEND_MESSAGE: "SEND_MESSAGE",
+  SET_PAGE: "SET_PAGE"
 };
 
 // Helper functions to dispatch actions, optionally with payloads
 export const actionCreators = {
+  setPage: page => {
+    localStorage.setItem('page', page)
+    return {type: types.SET_PAGE, payload: page};
+  },
   setMessages: item => {
     return {type: types.SET_MESSAGES, payload: item};
   },
@@ -68,7 +74,6 @@ export const actionCreators = {
         .then(resp => {
           if (resp.ok) {
             resp.json().then(data => {
-              console.log('props from express', data)
               fetch(`api/user/${user.data}`).then(response => {
                 if (response.ok) {
                   response.json().then(data => {
@@ -94,8 +99,8 @@ export const actionCreators = {
   },
   updateChats: data => {
     return dispatch => {
-        dispatch(actionCreators.setProfileStatus('INITIAL'))
-        dispatch(actionCreators.setMessages(data))
+      dispatch(actionCreators.setProfileStatus('INITIAL'))
+      dispatch(actionCreators.setMessages(data))
     }
   },
   saveUser: (id, following) => {
@@ -113,7 +118,7 @@ export const actionCreators = {
         .then(resp => {
           if (resp.ok) {
             resp.json().then(chats => {
-              chats.map(chat => dispatch(actionCreators.addMessage(chat)))
+              chats.map(chat => dispatch(actionCreators.addMessageHistory(chat)))
             }).catch((e) => {
               dispatch(actionCreators.hasError(true))
               throw(e)
@@ -126,16 +131,16 @@ export const actionCreators = {
         })
     }
   },
-  sendMessage: (usr, msg, avatar) => {
+  sendChat: (msg) => {
     return dispatch => {
-      // dispatch(actionCreators.setChatStatus('INITIAL'))
-      fetch(`/chats/${usr}/${msg}/${avatar}`, {
+      dispatch(actionCreators.setMessage(''))
+      fetch(`/chats/${msg['name']}/${msg['chat']}`, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({user: usr, name: msg, avatar: avatar}),
+        body: JSON.stringify({user: msg['name'], name: msg['chat']}),
       }).then(response => {
         if (response.ok) {
-          dispatch(actionCreators.fetchChats())
+          dispatch(actionCreators.addMessage(msg))
         } else {
           response.json().then(error => {
             dispatch(actionCreators.hasError(true))
@@ -145,25 +150,12 @@ export const actionCreators = {
         dispatch(actionCreators.hasError(true))
       });
     }
-
-    //   console.log('send message received', msg)
-    //   return fetch('/chats', {
-    //     method: 'POST',
-    //     body: JSON.stringify({
-    //       msg: msg
-    //     }),
-    //     headers: {"Content-Type": "application/json"}
-    //   })
-    //     .then(function (response) {
-    //       return response.json()
-    //     }).then(function (body) {
-    //       console.log(body);
-    //       dispatch(actionCreators.hasError(true))
-    //     });
-    // }
   },
   addMessage: item => {
     return {type: types.ADD_MESSAGE, payload: item}
+  },
+  addMessageHistory: item => {
+    return {type: types.ADD_MESSAGE_HISTORY, payload: item}
   },
   toggle_relevant: (bool) => {
     return dispatch => {
@@ -203,106 +195,11 @@ const initialState = {
   error: false,
   normalToggle: false,
   relevantToggle: false,
-  endpointTicker: 'http://localhost:4001',
-  endpointChat: 'http://localhost:4002',
+  endpointTicker: 'http://127.0.0.1:4001',
+  endpointChat: 'http://127.0.0.1:3000',
   currencies: [],
-  messages: []
-  // currencies: {
-  //   'BTC': {
-  //     'SEK': {
-  //       'current': '',
-  //       'last': '',
-  //     },
-  //     'USD': {
-  //       'current': '',
-  //       'last': ''
-  //     },
-  //     'EUR': {
-  //       'current': '',
-  //       'last': ''
-  //     }
-  //   },
-  //   'ETH': {
-  //     'SEK': {
-  //       'current': '',
-  //       'last': '',
-  //     },
-  //     'USD': {
-  //       'current': '',
-  //       'last': ''
-  //     },
-  //     'EUR': {
-  //       'current': '',
-  //       'last': ''
-  //     }
-  //   },
-  //   'ALT': {
-  //     'SEK': {
-  //       'current': '',
-  //       'last': '',
-  //     },
-  //     'USD': {
-  //       'current': '',
-  //       'last': ''
-  //     },
-  //     'EUR': {
-  //       'current': '',
-  //       'last': ''
-  //     }
-  //   }
-  // },
-  // coins: [
-  //   {
-  //     id: 1,
-  //     name: 'BTC',
-  //     prices: [
-  //       {
-  //         id: 1,
-  //         name: 'SEK',
-  //         data: [
-  //           {
-  //             id: 1,
-  //             current: this.state.currencies['BTC']['SEK']['current'],
-  //           },
-  //           {
-  //             id: 2,
-  //             last: this.state.currencies['BTC']['SEK']['last']
-  //           }
-  //         ],
-  //       },
-  //       {
-  //         id: 2,
-  //         name: 'EUR',
-  //         data: [
-  //           {
-  //             id: 1,
-  //             current: this.state.currencies['BTC']['EUR']['current'],
-  //           },
-  //           {
-  //             id: 2,
-  //             last: this.state.currencies['BTC']['EUR']['last']
-  //           }
-  //         ],
-  //       },
-  //       {
-  //         id: 3,
-  //         name: 'USD',
-  //         data: [
-  //           {
-  //             id: 1,
-  //             current: this.state.currencies['BTC']['USD']['current'],
-  //           },
-  //           {
-  //             id: 2,
-  //             last: this.state.currencies['BTC']['USD']['last']
-  //           }
-  //         ],
-  //       }
-  //     ]
-  //   },
-  //
-  //
-  // ],
+  messages: [],
+  page: 0
 }
 
 
@@ -321,6 +218,14 @@ export const reducer = (state = initialState, action) => {
     case types.ADD_MESSAGE: {
       return {
         ...state,
+        messages: [...state.messages, payload]
+      };
+    }
+  }
+  switch (type) {
+    case types.ADD_MESSAGE_HISTORY: {
+      return {
+        ...state,
         messages: [payload, ...state.messages]
       };
     }
@@ -332,8 +237,6 @@ export const reducer = (state = initialState, action) => {
         chatStatus: payload
       };
     }
-  }
-  switch (type) {
     case types.LOGIN_STATUS: {
       return {
         ...state,
@@ -378,18 +281,18 @@ export const reducer = (state = initialState, action) => {
         chatStatus: 'EMIT'
       };
     }
-    case types.SEND_CHAT: {
-      return {
-        ...state,
-        chatStatus: 'LOADING'
-      };
-    }
     case types.SET_USER: {
       return {
         ...state,
         status: 'LOADED',
         loginStatus: true,
         user: payload
+      };
+    }
+    case types.SET_PAGE: {
+      return {
+        ...state,
+        page: payload,
       };
     }
     case types.SET_MESSAGE: {

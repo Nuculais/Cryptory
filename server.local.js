@@ -239,43 +239,6 @@ app.get('/api/coin', (req, res) => {
 
 // const feed = require('./server/feed');
 
-const http = require("http");
-const socketIo = require("socket.io");
-const server = http.createServer(app);
-
-const io = socketIo(server);
-
-let interval;
-io.on('connection', socket => {
-  console.log('User connected. Socket id %s', socket.id);
-  if (interval) {
-    clearInterval(interval);
-  }
-  interval = setInterval(() => currencyAPI(socket), 5000);
-  socket.on("disconnect", () => {
-    console.log("Client disconnected");
-  });
-});
-const coinPort = 4001
-server.listen(coinPort, () => console.log(`Ticker listening on port ${coinPort}`));
-const currencyAPI = require('./server/currency_api')
-
-// chat calls
-const io2 = socketIo(server);
-io2.on('connection', socket => {
-  console.log('\n\n\n\nUser connected. Socket id', socket.id);
-  socket.on('chat', function (msg) {
-    console.log('emit')
-    socket.broadcast.emit('chat', msg);
-  });
-  socket.on("disconnect", () => {
-    console.log("Client disconnected");
-  });
-});
-
-const chatPort = 4002
-server.listen(chatPort, () => console.log(`Chatroom listening on port ${chatPort}`));
-
 
 app.get("/chats", (req, res) => {
   Chats.find({}, (error, chats) => {
@@ -285,73 +248,67 @@ app.get("/chats", (req, res) => {
     else {
       res.send(chats)
     }
-  }).sort({'date': -1}).limit(10)
+  }).sort({'date': -1}).limit(7)
 })
 
 app.put('/chats/:usr/:msg', async (req, res) => {
   let chat;
   try {
     chat = new Chats({name: req.params.usr, chat: req.params.msg});
-    console.log('\n\n\nchat object', chat, '\n\n\n')
     chat.save()
     res.sendStatus(200)
     io.emit("chat", req.params.msg)
   } catch (error) {
     res.status(500).json({message: `format: ${error}`});
   }
-  // db.collection('issues').update({ _id: issueId },  Issue.convertIssue(issue)).then(() =>
-  // db.collection('issues').find({ _id: issueId }).limit(1)
-  //   .next() )
-  //   .then(savedIssue => {
-  //     res.json(savedIssue);
-  //   })
-  //   .catch(error => {
-  //     console.log(error);
-  //     res.status(500).json({ message: `Internal Server Error: ${error}` });
-  //   });
 });
-//Loop through each of the chat data and insert into the database
-// for (var c = 0; c < chatData.length; c++) {
-//   //Create an instance of the chat model
-//   var newChat = new Chat(chatData[c]);
-//   //Call save to insert the chat
-//   newChat.save(function(err, savedChat) {
-//     console.log(savedChat);
-//   });
-// }
-// //Send a resoponse so the serve would not get stuck
-// res.send('created');
 
 
-// app.post("/chats", async (req, res) => {
-//   const chat = new Chats(req.body)
-//   console.log('\n\n\n\nchat created in api call', 'raw data:', req.body, '\n\n\n\n\n')
-//   try {
-//     await chat.save()
-//     res.sendStatus(200)
-//     io.emit("chat", req.body)
-//   } catch (error) {
-//     res.sendStatus(500)
-//     console.error(error)
-//   }
+// const http = require("http");
+// const socketIo = require("socket.io");
+// const server = http.createServer(app);
+//
+// const io = socketIo(server);
+// // Listen for a connection
+// io.on('connection', socket => {
+//   // Create message
+//   socket.on('chat message', params => {
+//     Chats.save(nfig, params, (message) => {
+//       io.emit('chat message', message);
+//     })
+//   })
 // })
 
-// io.on("connection", socket => {
-//   console.log("New client connected"), setInterval(
-//     () => getApiAndEmit(socket),
-//     10000
-//   );
-//   socket.on("disconnect", () => console.log("Client disconnected"));
+
+// let interval;
+// io.on('connection', socket => {
+//   console.log('User connected. Socket id %s', socket.id);
+//   if (interval) {
+//     clearInterval(interval);
+//   }
+//   interval = setInterval(() => currencyAPI(socket), 5000);
+//   socket.on("disconnect", () => {
+//     console.log("Client disconnected");
+//   });
+// });
+// const coinPort = 4002
+// server.listen(coinPort, () => console.log(`Ticker listening on port ${coinPort}`));
+// const currencyAPI = require('./server/currency_api')
+
+// chat calls
+// const io2 = socketIo(server);
+// io2.on('connection', socket => {
+//   console.log('User connected. Socket id', socket.id);
+//   socket.on('chat', function (msg) {
+//     socket.broadcast.emit('chat', msg);
+//   });
+//   socket.on("disconnect", () => {
+//     console.log("Client disconnected");
+//   });
 // });
 
-
-// // // feed.start(function (room, type, message) {
-// //   io.to(room).emit(type, message);
-// });
-
-// updating every 30 seconds
-// const loadCurrencyData = require('./server/currency_api.js');
-// loadCurrencyData();
+// const chatPort = 4002
+// server.listen(chatPort, () => console.log(`Chatroom listening on port ${chatPort}`));
 
 // development
 // Tell express to use the webpack-dev-middleware
@@ -364,8 +321,22 @@ app.use(webpackHotMiddleware(compiler));
 
 const port = process.env.PORT || 3000
 
-app.listen(port, function () {
+const server = app.listen(port, function () {
   console.log('Cryptory listening on port 3000!\n');
+});
+
+
+// Initialize socket.io
+const io = require('socket.io').listen(server);
+
+io.on('connection', socket => {
+  console.log('User connected. Socket id', socket.id);
+  socket.on('SEND_MESSAGE', function (data) {
+    io.emit('RECEIVE_MESSAGE', data);
+  })
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+  });
 });
 
 
