@@ -1,79 +1,44 @@
 //This is the view displaying histograms etc.
 import React, {Component} from 'react';
 import {render} from 'react-dom';
-import {VictoryChart, VictoryLine} from 'victory'; //Check for actual path.
+import {VictoryChart, VictoryLine} from 'victory'; //Check for actual path
 // import './histogram.css';
 import {modelInstance} from '../../data/APIetcModel';
-import ReactBootstrapSlider from 'react-bootstrap-slider';
 
-//import Slider from 'rc-slider/lib/Slider';
-//import Range from 'rc-slider/lib/Range';
-//import 'rc-slider/assets/index.css'; //These three need to be downloaded through npm. Check the paths.
-//Also import react-bootstrap-slider from github/brownieboy
 //import the other user data somehow
 
-class Histogram extends Component {
+class histogram extends Component {
   constructor(props) {
     super(props);
     this.state = {
       status: 'INITIAL',
-      //histogramdata: modelInstance.histogramData(1),
-      slidervalue: 1,
-      currentCurr: 'BTC'
+      histogramdata: this.props.model.histogramData('day')
     }
   }
 
   componentDidMount = () => {
-    let _this = this
-    //console.error(this.props);
-    modelInstance.addObserver(this);
-    //this.modelInstance.histogramData(slidervalue);
-    //Arvids förslag: Gör ett anrop till getHistorical direkt. Gör två versioner av histogramData. Den ena kan anropas i början, den andra när det har laddat, för att undvika unresolved promises.
-    modelInstance.histogramData(1).then((histo) =>{ //This goes in update too
-      
-      _this.setState({
-        status: 'LOADED',
-        //histogramdata: modelInstance.histogramData(1),
-        slidervalue: 1,
-        currentCurr: 'BTC',
-        histo: histo
-      })
-      }).catch(() => {
-        _this.setState({
-          status: 'ERROR'
-        })
-      })
+    this.props.model.addObserver(this)
+    this.props.model.histogramData(slidervalue);
+
   }
 
   componentWillUnmount = () => {
-    modelInstance.removeObserver(this)
+    this.props.model.removeObserver(this)
   }
 
   update = () => {
     this.setState({
-      //histogramdata: modelInstance.histogramData(this.state.slidervalue), 
-      currentCurr: modelInstance.getCurrentCurr(),
-      slidervalue: 1
+      histogramdata: this.props.model.histogramData(slidervalue)
     })
   }
 
   newCurr = (e) => {
-    modelInstance.setCurrentCurr(e.target.value);
-    this.setState({currentCurr: e.target.value});
+    this.props.model.setCurrentCurr(e.target.value);
   }
 
-  OnSliderChangeValue = (e) => {
-    this.setState({ slidervalue: e.target.value });
-  }
 
   render() {
-      let histogram = ''
-      switch (this.state.status) {
-        case 'INITIAL':
-        histogram = <em>Loading...</em>
-        break;
-        case 'LOADED':
-        histogram = 
+    return (
       <div className='row'>
         <div className='col-md-10'>
           <div className='col-md-5'>
@@ -94,47 +59,31 @@ class Histogram extends Component {
             </select>
           </div>
           <div className='col-md-5'>
-            <h2>Current price: </h2><p>{modelInstance.getCurrentPrice(this.state.currentCurr, 'SEK')}</p>
+            <h2>Current price: </h2><p>{ResultOfAPICallPlaceholder}</p>
           </div>
 
           <div className='row' id='graphOfSelectedCurrency'>
             <VictoryChart>
               <VictoryLine
-                data={histo}
+                data={ResultOfAnotherAPICallPlaceholder}
               />
             </VictoryChart>
-            <ReactBootstrapSlider
-              max={3}
-              min={1}
-              step={1}
-              ticks={[1, 2, 3]}
-              ticks_labels = {["Day", "Week", "Month"]}
-              tooltip="hide"
-              change={this.state.OnSliderChangeValue}
-              value={this.state.slidervalue} 
-              />
+            <Slider/>
           </div>
 
-           <div className='row' id='graphOfUserWallet'>
+          <div className='row' id='graphOfUserWallet'>
             <VictoryChart>
               <VictoryLine
 
               />
             </VictoryChart>
           </div>
+
         </div>
-      </div>     
-         break;        
-}
-return(
-  <div>{histogram}</div>
-);
-  }}
 
-render(
-  <Histogram/>,
-  document.getElementById('histogram'));
-
-if (module.hot) {
-  module.hot.accept();
+      </div>
+    )
+  }
 }
+
+export default histogram;

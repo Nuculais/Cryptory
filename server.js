@@ -1,17 +1,18 @@
 const express = require('express');
 const helmet = require('helmet');
-const bodyParser = require('body-parser');
 
 // mongo
-const User = require('./model/User');
-const Coin = require('./model/Coin');
 const mongoose = require('mongoose');
+const User = require('./model/User');
+const Chats = require('./model/Chats')
+
 mongoose.set('debug', true);
 const uri = `mongodb://${encodeURIComponent('cryptoryadmin')}:${encodeURIComponent('cryptory123456789')}@ds247569.mlab.com:47569/heroku_d783vzs7`
 mongoose.connect(uri);
 // logging
 mongoose.Promise = global.Promise;
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
+
 
 // passport
 const passport = require('passport');
@@ -36,7 +37,7 @@ app.use(helmet());
 app.use(require('morgan')('combined'));
 app.use(require('cookie-parser')());
 app.use(require('express-session')({secret: 'keyboard cat', resave: true, saveUninitialized: true}));
-app.use(bodyParser.json());
+app.use(require('body-parser').urlencoded({extended: true}));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -90,7 +91,7 @@ app.get('/home/:id',
     res.render('home', {user: req.user.id});
   });
 
-app.get('/api/user/:id', (req, res) => {
+app.get('/api/user/:username', (req, res) => {
   require('connect-ensure-login').ensureLoggedIn(),
     User.findOne({username: JSON.parse(req.params.username)},
       function (err, obj) {
@@ -98,31 +99,49 @@ app.get('/api/user/:id', (req, res) => {
           res.send(err);
           return;
         }
-        res.json({data: obj});
+        res.json(obj);
       });
 });
 
-app.get('/api/coin', (req, res) => {
-  require('connect-ensure-login').ensureLoggedIn(),
-    Coin.findOne({name: 'coins'},
-      function (err, obj) {
-        if (err) {
-          res.send(err);
-          return;
-        }
-        res.json({info: obj});
-      });
+app.get('/chats', (req, res) => {
+  Chats.find({}, (error, chats) => {
+    if (error) {
+      res.send(error)
+    }
+    else {
+      res.send(chats)
+    }
+  }).sort({'date': -1}).limit(7)
+})
 
+app.put('/chats/:usr/:msg', async (req, res) => {
+  let chat;
+  try {
+    chat = new Chats({name: req.params.usr, chat: req.params.msg});
+    chat.save()
+    res.sendStatus(200)
+    io.emit("chat", req.params.msg)
+  } catch (error) {
+    res.status(500).json({message: `format: ${error}`});
+  }
 });
-
-// call API every 30 seconds
-const loadCurrencyData = require('./server/currency_api.js');
-loadCurrencyData();
 
 const port = process.env.PORT || 3000
 
 // Serve the files on port 3000.
-app.listen(port, function () {
+const server = app.listen(port, function () {
   console.log('Example app listening on port 3000!\n');
 });
 
+
+const io = require('socket.io').listen(server);
+
+io.on('connection', socket => {
+  console.log('User connected. Socket id', socket.id);
+  socket.on('SEND_MESSAGE', function (data) {
+    io.emit('RECEIVE_MESSAGE', data);
+  })
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+  });
+});
