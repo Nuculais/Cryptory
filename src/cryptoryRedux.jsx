@@ -195,7 +195,7 @@ const initialState = {
   error: false,
   normalToggle: false,
   relevantToggle: false,
-  endpointChat: 'https://localhost:3000',
+  endpointChat: `https://localhost:${process.env.PORT || 3000}`,
   currencies: [],
   messages: [],
   page: 0
