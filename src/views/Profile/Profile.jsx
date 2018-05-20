@@ -44,6 +44,9 @@ const mapDispatchToProps = (dispatch) => ({
   setEndpoint: url => {
     dispatch(actionCreators.setEndpoint(url))
   },
+  addMessage: msg => {
+    dispatch(actionCreators.addMessage(msg))
+  },
 })
 
 const adjustHeight = () => {
@@ -58,10 +61,11 @@ class Profile extends React.Component {
   }
 
   render() {
-    let profile;
+    let profile, chatroom
     switch (this.props.status) {
       case 'INITIAL':
         profile = <Progress/>
+        chatroom = <Progress/>
         break;
       case 'LOADED':
         profile =
@@ -80,9 +84,14 @@ class Profile extends React.Component {
               chat with other members! We also switch to a color scheme at night that's easier on your eyes. Enjoy!
             </CardText>
           </Card>
+        chatroom = <Chatroom
+          name={this.props.username}
+          addMessage={this.props.addMessage}
+        />
         break
       default:
-        profile = <em>there was an error loading the profile</em>
+        profile = <em>there was an error loading the profile. please refresh the page!</em>
+        chatroom = <em>there was an error loading the profile. please refresh the page!</em>
         break
     }
     let page;
@@ -91,9 +100,7 @@ class Profile extends React.Component {
         page = profile
         break;
       case 'chatroom':
-        page = <Chatroom name={this.props.username}>
-          {document.getElementById('chatlist') ? adjustHeight() : ''}
-        </Chatroom>
+        page = chatroom
         break
       case 'histogram':
         page = <Card>'histogram'</Card>
@@ -124,7 +131,6 @@ class Profile extends React.Component {
                 </Col>
                 <Col xs>
                   {page}
-                  {document.getElementById('chatlist') ? adjustHeight() : ''}
                   {this.props.page === 'wallet' ?
                     <div className="myWallet">
                       {/*<h1 align="center">{this.state.title}</h1>*/}

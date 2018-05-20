@@ -51,9 +51,6 @@ const mapDispatchToProps = (dispatch) => ({
   loadProfile: id => {
     dispatch(actionCreators.fetchUser(id))
   },
-  addMessage: msg => {
-    dispatch(actionCreators.addMessage(msg))
-  },
 })
 const adjustHeight = () => {
   const box = document.getElementById('chatlist')
