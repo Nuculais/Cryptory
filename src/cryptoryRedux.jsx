@@ -199,7 +199,7 @@ const initialState = {
   error: false,
   normalToggle: false,
   relevantToggle: false,
-  endpoint:'' ,
+  endpoint:'https://murmuring-sea-20139.herokuapp.com' ,
   currencies: [],
   messages: [],
   page: 0

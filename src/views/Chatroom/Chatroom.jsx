@@ -65,7 +65,6 @@ class Chatroom extends React.Component {
     if (this.props.username) {
       this.props.loadProfile(localStorage.getItem('user'))
     }
-    console.log(this.props)
     this.props.loadChats()
     const endpoint = this.props.endpoint;
     const socket = socketIOClient(endpoint);
