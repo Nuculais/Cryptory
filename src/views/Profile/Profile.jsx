@@ -61,7 +61,7 @@ class Profile extends React.Component {
       this.props.loadProfile(user.data)
       localStorage.setItem('user', user.data)
     }
-    this.props.setEndpoint(`https://localhost:${port.data}`)
+    this.props.setEndpoint('https://localhost' + port.data)
   }
 
   render() {
