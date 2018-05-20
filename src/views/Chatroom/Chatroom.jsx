@@ -28,7 +28,6 @@ const styles = {
 };
 
 const mapStateToProps = (state) => ({
-  username: state.username,
   messages: state.messages,
   status: state.chatStatus,
   endpoint: state.endpoint,
@@ -39,17 +38,11 @@ const mapDispatchToProps = (dispatch) => ({
   loadChats: () => {
     dispatch(actionCreators.fetchChats())
   },
-  updateChats: data => {
-    dispatch(actionCreators.updateChats(data))
-  },
   setMessage: msg => {
     dispatch(actionCreators.setMessage(msg))
   },
   sendChat: msg => {
     dispatch(actionCreators.sendChat(msg))
-  },
-  loadProfile: id => {
-    dispatch(actionCreators.fetchUser(id))
   },
 })
 const adjustHeight = () => {
@@ -65,6 +58,7 @@ class Chatroom extends React.Component {
     const socket = socketIOClient(endpoint);
     socket.on('RECEIVE_MESSAGE', function (data) {
       console.log('received message', data)
+      console.log('chatroom props in socket', this.props)
       this.props.addMessage(data)
       document.getElementById('chatlist') ? adjustHeight() : ''
     });
