@@ -63,9 +63,6 @@ const adjustHeight = () => {
 class Chatroom extends React.Component {
   componentDidMount() {
     console.log('chatroom props', this.props)
-    if (this.props.username) {
-      this.props.loadProfile(localStorage.getItem('user'))
-    }
     this.props.loadChats()
     const endpoint = this.props.endpoint;
     const socket = socketIOClient(endpoint);

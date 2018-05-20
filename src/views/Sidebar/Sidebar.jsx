@@ -85,29 +85,7 @@ const mapStateToProps = (state) => ({
 })
 
 class Sidebar extends React.Component {
-  translatePage = (string) => {
-    let page
-    switch (string) {
-      case 'chatroom':
-        page = 1
-        break
-      case 'wallet':
-        page = 2
-        break
-      case 'histogram':
-        page = 3
-        break
-      case 'ticker':
-        page = 4
-        break
-      default:
-        page = 0
-        break
-    }
-    return page
-  }
   render() {
-
     return (
       <div>
         <List>
@@ -121,12 +99,10 @@ class Sidebar extends React.Component {
               />}
             primaryText={this.props.username}
           />
-          <ListItem primaryText={this.props.name}
-                    style={style}/>
         </List>
         <Divider/>
         <SelectableList
-          defaultValue={this.translatePage(localStorage.getItem('page'))}
+          defaultValue={0}
           fn={this.props.setPage}
         >
           <ListItem

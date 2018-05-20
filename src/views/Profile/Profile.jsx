@@ -53,14 +53,7 @@ const adjustHeight = () => {
 class Profile extends React.Component {
 
   componentDidMount() {
-    if (localStorage.getItem('user')) {
-      this.props.loadProfile(localStorage.getItem('user'))
-      this.props.restorePage(localStorage.getItem('page'))
-    }
-    if (!this.props.loginStatus) {
-      this.props.loadProfile(user.data)
-      localStorage.setItem('user', user.data)
-    }
+    this.props.loadProfile(user.data)
   }
 
   render() {
