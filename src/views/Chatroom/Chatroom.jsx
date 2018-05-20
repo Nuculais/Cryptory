@@ -51,14 +51,21 @@ const adjustHeight = () => {
 }
 
 class Chatroom extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      messages: []
+    }
+  }
   componentDidMount() {
     console.log('chatroom props', this.props)
     this.props.loadChats()
+    this.setState({messages: this.props.messages})
     const endpoint = this.props.endpoint;
     const socket = socketIOClient(endpoint);
     socket.on('RECEIVE_MESSAGE', function (data) {
       console.log('received message', data)
-      console.log('chatroom props in socket', this.props)
+      console.log('chatroom state in socket', this.state)
       this.props.addMessage(data)
       document.getElementById('chatlist') ? adjustHeight() : ''
     });

@@ -10,6 +10,7 @@ import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 import lightBaseTheme from "material-ui/styles/baseThemes/lightBaseTheme";
 import {Card} from 'material-ui/Card'
 import {Grid} from 'react-flexbox-grid';
+import { BrowserRouter } from 'react-router-dom'
 
 // Import the reducer and create a store
 import {reducer} from './cryptoryRedux.jsx'
@@ -38,7 +39,9 @@ const AppWithStore = (
         : getMuiTheme(lightBaseTheme)}>
       <Card>
         <Grid fluid>
+          <BrowserRouter>
           <Profile/>
+          </BrowserRouter>
         </Grid>
       </Card>
     </MuiThemeProvider>
