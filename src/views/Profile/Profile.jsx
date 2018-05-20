@@ -62,7 +62,7 @@ class Profile extends React.Component {
       localStorage.setItem('user', user.data)
     }
     let port = parseInt(user.port.split('"')[1])
-    this.props.setEndpoint('http://localhost:' + port)
+    this.props.setEndpoint('https://myherokudomain.herokuapp.com:' + port)
   }
 
   render() {
