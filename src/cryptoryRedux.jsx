@@ -202,7 +202,7 @@ const initialState = {
   endpoint:'https://murmuring-sea-20139.herokuapp.com' ,
   currencies: [],
   messages: [],
-  page: 0
+  page: 'profile'
 }
 
 

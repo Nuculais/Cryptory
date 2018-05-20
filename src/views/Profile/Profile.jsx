@@ -21,7 +21,8 @@ const mapStateToProps = (state) => ({
   endpoint: state.endpointChat,
   message: state.message,
   page: state.page,
-  username: state.user.username
+  username: state.user.username,
+  status: state.status
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -58,7 +59,7 @@ class Profile extends React.Component {
 
   render() {
     let profile;
-    switch (this.props.profile.status) {
+    switch (this.props.status) {
       case 'INITIAL':
         profile = <Progress/>
         break;
@@ -87,7 +88,7 @@ class Profile extends React.Component {
     let page;
     switch (this.props.page) {
       case 'profile':
-        page = this.props.profile.status === 'LOADED' ? profile : ''
+        page = profile
         break;
       case 'chatroom':
         page = <Chatroom name={this.props.username}>
@@ -118,7 +119,6 @@ class Profile extends React.Component {
                         <Sidebar name={this.props.name} username={this.props.username}
                                  avatar={this.props.profile.user.avatar}/>
                       </div>
-                      {/*{profile}*/}
                     </div>
                   </Card>
                 </Col>
