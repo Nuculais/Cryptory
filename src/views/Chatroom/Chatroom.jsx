@@ -65,7 +65,7 @@ class Chatroom extends React.Component {
     console.log(this.props)
     this.props.loadChats()
     const endpoint = this.props.endpoint;
-    const socket = socketIOClient(endpoint, {secure: true});
+    const socket = socketIOClient(endpoint);
     socket.on('RECEIVE_MESSAGE', function (data) {
       console.log('received message', data)
       document.getElementById('chatlist') ? adjustHeight() : ''
@@ -75,7 +75,7 @@ class Chatroom extends React.Component {
 
   sendMessage = event => {
     event.preventDefault()
-    const socket = socketIOClient(this.props.endpoint, {secure: true});
+    const socket = socketIOClient(this.props.endpoint);
     const chat = {
       _id: Math.random(),
       name: this.props.name,
