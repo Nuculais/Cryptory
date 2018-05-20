@@ -127,8 +127,6 @@ app.put('/chats/:usr/:msg', async (req, res) => {
 });
 
 const port = process.env.PORT || 3000
-
-// Serve the files on port 3000.
 const server = app.listen(port, function () {
   console.log('Cryptory app listening on port' + port + '!\n');
 });
@@ -137,7 +135,7 @@ const server = app.listen(port, function () {
 const io = require('socket.io').listen(server);
 
 io.on('connection', socket => {
-  console.log('User connected. Socket id', socket.id);
+  console.log('\n\n\n\nUser connected. Socket id', socket.id, '\n\n\n\n\n\n');
   socket.on('SEND_MESSAGE', function (data) {
     io.emit('RECEIVE_MESSAGE', data);
   })
