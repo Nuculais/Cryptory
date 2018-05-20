@@ -42,9 +42,6 @@ const mapDispatchToProps = (dispatch) => ({
   updateChats: data => {
     dispatch(actionCreators.updateChats(data))
   },
-  addMessage: msg => {
-    dispatch(actionCreators.addMessage(msg))
-  },
   setMessage: msg => {
     dispatch(actionCreators.setMessage(msg))
   },

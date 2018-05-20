@@ -37,6 +37,9 @@ const mapDispatchToProps = (dispatch) => ({
   restorePage: page => {
     dispatch(actionCreators.setPage(page))
   },
+  addMessage: msg => {
+    dispatch(actionCreators.addMessage(msg))
+  },
   setChatStatus: status => {
     dispatch(actionCreators.setChatStatus(status))
   },
@@ -97,7 +100,7 @@ class Profile extends React.Component {
         page = this.props.profile.status === 'LOADED' ? profile : ''
         break;
       case 'chatroom':
-        page = <Chatroom add={this.props.addMessage} name={this.props.username}>
+        page = <Chatroom addMessage={this.props.addMessage} name={this.props.username}>
           {document.getElementById('chatlist') ? adjustHeight() : ''}
         </Chatroom>
         break
