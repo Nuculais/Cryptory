@@ -130,7 +130,7 @@ const port = process.env.PORT || 3000
 
 // Serve the files on port 3000.
 const server = app.listen(port, function () {
-  console.log('Example app listening on port' + port + "!\n');
+  console.log('Cryptory app listening on port' + port + '!\n');
 });
 
 
