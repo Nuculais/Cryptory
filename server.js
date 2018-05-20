@@ -104,7 +104,6 @@ app.get('/api/user/:username', (req, res) => {
 });
 
 app.get('/chats', (req, res) => {
-  require('connect-ensure-login').ensureLoggedIn(),
   Chats.find({}, (error, chats) => {
     if (error) {
       res.send(error)
@@ -116,7 +115,6 @@ app.get('/chats', (req, res) => {
 })
 
 app.put('/chats/:usr/:msg', async (req, res) => {
-  require('connect-ensure-login').ensureLoggedIn(),
   try {
     const chat = new Chats({name: req.params.usr, chat: req.params.msg});
     chat.save()

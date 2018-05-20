@@ -103,12 +103,15 @@ class Chatroom extends React.Component {
             <List id={'chatlist'} style={styles.chatList}>
               <Subheader>Recent chats</Subheader>
               {this.props.messages.map(item => {
-                return <div key={`${item._id}`}><ListItem
-                  primaryText={`${item.name}`}
-                  leftAvatar={<CommunicationChatBubble/>}
-                >
-                </ListItem>
+                return <div key={`${item._id}`}>
+                  <Divider/>
+                  <ListItem
+                    primaryText={`${item.name}`}
+                    leftAvatar={<CommunicationChatBubble/>}
+                  >
+                  </ListItem>
                   {`[${new Date(item.date).toLocaleString().split(',')[0]} - ${new Date(item.date).toLocaleString().split(',')[1]} ]:    ${item.chat}`}
+                  <Divider/>
                 </div>
               })}
             </List>
