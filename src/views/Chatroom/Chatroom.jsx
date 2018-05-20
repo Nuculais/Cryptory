@@ -60,28 +60,23 @@ const compose = (data, cb) => {
 class Chatroom extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {
-      messages: []
-    }
     this.fetchChat = this.fetchChat.bind(this);
   }
 
 
   componentDidMount() {
-    console.log('chatroom props', this.props)
     this.props.loadChats()
     const endpoint = this.props.endpoint;
     const socket = socketIOClient(endpoint);
     socket.on('RECEIVE_MESSAGE', this.props.addMessage, function (data) {
-      console.log('received message', data)
       this.fetchChat(data)
-      document.getElementById('chatlist') ? adjustHeight() : ''
     });
     document.getElementById('chatlist') ? adjustHeight() : ''
   }
 
   fetchChat = data => {
     this.props.addMessage(data)
+    document.getElementById('chatlist') ? adjustHeight() : ''
   }
 
   sendMessage = event => {
