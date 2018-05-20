@@ -40,6 +40,9 @@ const mapDispatchToProps = (dispatch) => ({
   setChatStatus: status => {
     dispatch(actionCreators.setChatStatus(status))
   },
+  setEndpoint: url => {
+    dispatch(actionCreators.setEndpoint(url))
+  },
 })
 
 const adjustHeight = () => {
@@ -58,6 +61,7 @@ class Profile extends React.Component {
       this.props.loadProfile(user.data)
       localStorage.setItem('user', user.data)
     }
+    this.props.setEndpoint(`https://localhost:${port.data}`)
   }
 
   render() {

@@ -27,7 +27,8 @@ export const types = {
   ADD_MESSAGE_HISTORY: "ADD_MESSAGE_HISTORY",
   PROFILE_STATUS: "PROFILE_STATUS",
   SEND_MESSAGE: "SEND_MESSAGE",
-  SET_PAGE: "SET_PAGE"
+  SET_PAGE: "SET_PAGE",
+  SET_ENDPOINT: "SET_ENDPOINT"
 };
 
 // Helper functions to dispatch actions, optionally with payloads
@@ -62,6 +63,9 @@ export const actionCreators = {
   },
   setProfileStatus: item => {
     return {type: types.PROFILE_STATUS, payload: item};
+  },
+  setEndpoint: item => {
+    return {type: types.SET_ENDPOINT, payload: item};
   },
   clearMessages: () => {
     return {type: types.CLEAR_MESSAGES};
@@ -195,7 +199,7 @@ const initialState = {
   error: false,
   normalToggle: false,
   relevantToggle: false,
-  endpointChat: `https://localhost:${process.env.PORT || 3000}`,
+  endpoint:'' ,
   currencies: [],
   messages: [],
   page: 0
@@ -220,16 +224,12 @@ export const reducer = (state = initialState, action) => {
         messages: [...state.messages, payload]
       };
     }
-  }
-  switch (type) {
     case types.ADD_MESSAGE_HISTORY: {
       return {
         ...state,
         messages: [payload, ...state.messages]
       };
     }
-  }
-  switch (type) {
     case types.CHAT_STATUS: {
       return {
         ...state,
@@ -286,6 +286,12 @@ export const reducer = (state = initialState, action) => {
         status: 'LOADED',
         loginStatus: true,
         user: payload
+      };
+    }
+    case types.SET_ENDPOINT: {
+      return {
+        ...state,
+        endpoint: payload
       };
     }
     case types.SET_PAGE: {

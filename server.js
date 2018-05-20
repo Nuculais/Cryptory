@@ -65,7 +65,7 @@ app.get('/logout',
 app.get('/profile',
   require('connect-ensure-login').ensureLoggedIn(),
   function (req, res) {
-    res.render('profile', {user: req.user.username});
+    res.render('profile', {user: req.user.username, port: process.env.PORT});
   });
 
 app.get('/login/github',

@@ -31,7 +31,7 @@ const mapStateToProps = (state) => ({
   username: state.username,
   messages: state.messages,
   status: state.chatStatus,
-  endpoint: state.endpointChat,
+  endpoint: state.endpoint,
   message: state.message
 })
 
