@@ -51,6 +51,9 @@ const mapDispatchToProps = (dispatch) => ({
   loadProfile: id => {
     dispatch(actionCreators.fetchUser(id))
   },
+  addMessage: msg => {
+    dispatch(actionCreators.addMessage(msg))
+  },
 })
 const adjustHeight = () => {
   const box = document.getElementById('chatlist')
@@ -59,6 +62,7 @@ const adjustHeight = () => {
 
 class Chatroom extends React.Component {
   componentDidMount() {
+    console.log('chatroom props', this.props)
     if (this.props.username) {
       this.props.loadProfile(localStorage.getItem('user'))
     }
