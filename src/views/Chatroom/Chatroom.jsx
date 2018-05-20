@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-  Table,
-  TableBody,
-  TableFooter,
-  TableHeader,
-  TableHeaderColumn,
-  TableRow,
-  TableRowColumn,
-} from 'material-ui/Table';
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+import {Card} from 'material-ui/Card';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton'
 import {connect} from 'react-redux'
@@ -20,7 +11,6 @@ import Divider from 'material-ui/Divider';
 import CommunicationChatBubble from 'material-ui/svg-icons/communication/chat-bubble';
 import socketIOClient from "socket.io-client";
 import {Row, Col} from 'react-flexbox-grid';
-
 
 const styles = {
   propContainer: {
@@ -75,7 +65,7 @@ class Chatroom extends React.Component {
     console.log(this.props)
     this.props.loadChats()
     const endpoint = this.props.endpoint;
-    const socket = socketIOClient(endpoint);
+    const socket = socketIOClient(endpoint, {secure: true});
     socket.on('RECEIVE_MESSAGE', function (data) {
       console.log('received message', data)
       document.getElementById('chatlist') ? adjustHeight() : ''
@@ -85,7 +75,7 @@ class Chatroom extends React.Component {
 
   sendMessage = event => {
     event.preventDefault()
-    const socket = socketIOClient(this.props.endpoint);
+    const socket = socketIOClient(this.props.endpoint, {secure: true});
     const chat = {
       _id: Math.random(),
       name: this.props.name,
@@ -94,8 +84,8 @@ class Chatroom extends React.Component {
     }
     document.getElementById('chatform').reset()
     socket.emit("SEND_MESSAGE", chat)
+    document.getElementById('chatlist') ? adjustHeight() : ''
     this.props.sendChat(chat)
-   adjustHeight()
   }
 
   render() {

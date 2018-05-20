@@ -195,8 +195,7 @@ const initialState = {
   error: false,
   normalToggle: false,
   relevantToggle: false,
-  endpointTicker: 'http://127.0.0.1:4001',
-  endpointChat: 'http://127.0.0.1:3000',
+  endpointChat: 'https://localhost:3000',
   currencies: [],
   messages: [],
   page: 0

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {render} from 'react-dom'
 import {createStore, applyMiddleware, compose} from 'redux'
-// import {createLogger} from 'redux-logger'
+import {createLogger} from 'redux-logger'
 import {Provider} from 'react-redux'
 import Profile from './views/Profile/Profile.jsx'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -22,7 +22,7 @@ const store = createStore(
   composeEnhancers(
     applyMiddleware(
       thunkMiddleware,
-      // createLogger()
+      createLogger()
     )));
 
 const time = () => {
