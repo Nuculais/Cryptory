@@ -120,7 +120,7 @@ app.put('/chats/:usr/:msg', async (req, res) => {
     chat = new Chats({name: req.params.usr, chat: req.params.msg});
     chat.save()
     res.sendStatus(200)
-    io.emit("chat", req.params.msg)
+    io.emit("RECEIVE_MESSAGE", {name: req.params.usr, chat: req.params.msg})
   } catch (error) {
     res.status(500).json({message: `format: ${error}`});
   }
@@ -130,6 +130,7 @@ const port = process.env.PORT || 3000
 const server = app.listen(port, function () {
   console.log('Cryptory app listening on port' + port + '!\n');
 });
+console.log('server', server)
 
 
 const io = require('socket.io').listen(server);

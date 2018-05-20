@@ -42,8 +42,8 @@ const mapDispatchToProps = (dispatch) => ({
   updateChats: data => {
     dispatch(actionCreators.updateChats(data))
   },
-  setMessage: msg => {
-    dispatch(actionCreators.setMessage(msg))
+  addMessage: msg => {
+    dispatch(actionCreators.addMessage(msg))
   },
   sendChat: msg => {
     dispatch(actionCreators.sendChat(msg))
@@ -68,6 +68,7 @@ class Chatroom extends React.Component {
     const socket = socketIOClient(endpoint);
     socket.on('RECEIVE_MESSAGE', function (data) {
       console.log('received message', data)
+      dispatch(actionCreators.addMessage(data))
       document.getElementById('chatlist') ? adjustHeight() : ''
     });
     document.getElementById('chatlist') ? adjustHeight() : ''
