@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const User = require('./model/User');
 const Chats = require('./model/Chats')
 
-mongoose.set('debug', true);
+// mongoose.set('debug', true);
 const uri = `mongodb://${encodeURIComponent('cryptoryadmin')}:${encodeURIComponent('cryptory123456789')}@ds247569.mlab.com:47569/heroku_d783vzs7`
 mongoose.connect(uri);
 // logging

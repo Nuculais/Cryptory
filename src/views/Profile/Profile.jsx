@@ -61,12 +61,12 @@ class Profile extends React.Component {
       this.props.loadProfile(user.data)
       localStorage.setItem('user', user.data)
     }
-    console.log('passed port', port.data)
-    let port = port.data
+    console.log('passed port', user.port)
+    let port = user.port
     console.log('port', port)
     console.log('port int', parseInt(port))
     console.log('port split', port.split('"'))
-    this.props.setEndpoint('https://localhost:' + parseInt(port.data))
+    this.props.setEndpoint('https://localhost:' + port)
   }
 
   render() {
@@ -89,7 +89,7 @@ class Profile extends React.Component {
             </CardMedia>
             <CardText>
               At Cryptory, you can manage and keep track of your cryptocurrency holdings, check current prices, and even
-              chat with other members!  We also switch to a color scheme at night that's easier on your eyes.  Enjoy!
+              chat with other members! We also switch to a color scheme at night that's easier on your eyes. Enjoy!
             </CardText>
           </Card>
         break
