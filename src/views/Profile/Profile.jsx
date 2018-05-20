@@ -6,14 +6,8 @@ import Chatroom from '../Chatroom/Chatroom'
 import {connect} from 'react-redux'
 import {actionCreators} from '../../cryptoryRedux.jsx'
 import {Row, Col} from 'react-flexbox-grid';
-import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
-import RaisedButton from 'material-ui/RaisedButton';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
-import FlatButton from 'material-ui/FlatButton';
-import TextField from 'material-ui/TextField';
 import Divider from 'material-ui/Divider';
-import Paper from 'material-ui/Paper';
-import socketIOClient from "socket.io-client";
 
 const mapStateToProps = (state) => ({
   profile: state,
@@ -44,13 +38,7 @@ const mapDispatchToProps = (dispatch) => ({
   setEndpoint: url => {
     dispatch(actionCreators.setEndpoint(url))
   },
-
 })
-
-const adjustHeight = () => {
-  const box = document.getElementById('chatlist')
-  box.scrollTop = box.scrollHeight
-}
 
 class Profile extends React.Component {
 

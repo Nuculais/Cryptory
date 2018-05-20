@@ -48,19 +48,12 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(actionCreators.addMessage(msg))
   },
 })
-const adjustHeight = () => {
-  const box = document.getElementById('chatlist')
-  box.scrollTop = box.scrollHeight
-}
-
-const compose = (data, cb) => {
-
-}
 
 class Chatroom extends React.Component {
   constructor(props) {
     super(props)
     this.fetchChat = this.fetchChat.bind(this);
+    this.adjustHeight = this.adjustHeight.bind(this);
   }
 
 
@@ -71,12 +64,11 @@ class Chatroom extends React.Component {
     socket.on('RECEIVE_MESSAGE', this.props.addMessage, function (data) {
       this.fetchChat(data)
     });
-    document.getElementById('chatlist') ? adjustHeight() : ''
+    document.getElementById('chatlist') ? this.adjustHeight() : null
   }
 
   fetchChat = data => {
     this.props.addMessage(data)
-    document.getElementById('chatlist') ? adjustHeight() : ''
   }
 
   sendMessage = event => {
@@ -90,8 +82,12 @@ class Chatroom extends React.Component {
     }
     document.getElementById('chatform').reset()
     socket.emit("SEND_MESSAGE", chat)
-    document.getElementById('chatlist') ? adjustHeight() : ''
     this.props.sendChat(chat)
+  }
+
+  adjustHeight = () => {
+    const box = document.getElementById('chatlist')
+    box.scrollTop = box.scrollHeight
   }
 
   render() {
@@ -121,7 +117,6 @@ class Chatroom extends React.Component {
                 </div>
               })}
             </List>
-            {document.getElementById('chatlist') ? adjustHeight() : ''}
           </Card>
         break
       default:
@@ -140,7 +135,6 @@ class Chatroom extends React.Component {
         </Card>
         <Divider/>
         {chatHistory}
-        {document.getElementById('chatlist') ? adjustHeight() : ''}
         <Divider/>
         <Row>
           <Col xs>
