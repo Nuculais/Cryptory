@@ -134,7 +134,7 @@ class Sidebar extends React.Component {
         <Divider/>
         <br/>
         <div style={{textAlign: 'center'}}>
-          <RaisedButton href={'logout'} label="LOG OUT" style={styles} />
+          <RaisedButton href="/logout" label="LOG OUT" style={styles} />
         </div>
         <br/>
         <Divider/>

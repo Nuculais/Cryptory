@@ -103,7 +103,7 @@ class Profile extends React.Component {
                   <Card>
                     <div className="navbar" style={{'height': '800px'}}>
                       <div>
-                        <img src="https://i.imgur.com/s5krUs0.png" width="100%"
+                        <img src="https://i.imgur.com/s5krUs0.png"
                              style={{marginTop: '20px', marginBottom: '20px'}}/>
                       </div>
                       <Divider/>
@@ -114,7 +114,7 @@ class Profile extends React.Component {
                     </div>
                   </Card>
                 </Col>
-                <Col xs>
+                <Col xs={6}>
                   {page}
                   {this.props.page === 'wallet' ?
                     <div className="myWallet">

@@ -1,9 +1,25 @@
 import React from 'react';
+import {Card, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 
 export default class Welcome extends React.Component {
   render() {
     return (
-      <div>Welcome please <a href="/login/github">login</a></div>
+      <Card>
+        <CardHeader title={'CRYPTORY'}/>
+        <CardMedia
+          overlay={<CardTitle
+            title={'Welcome!'}
+          />}>
+          <img src="https://i.imgur.com/s5krUs0.png" height="400" width="400" alt="Cryptory"/>
+        </CardMedia>
+        <CardText>
+          Get ready to maintain your crypto transactions..
+          <br/>
+          <div style={{textAlign: 'center'}}>
+            <RaisedButton href="login" label="LOG OUT"/>
+          </div>
+        </CardText>
+      </Card>
     )
   }
 }
