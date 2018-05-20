@@ -22,7 +22,7 @@ const store = createStore(
   composeEnhancers(
     applyMiddleware(
       thunkMiddleware,
-      createLogger()
+      // createLogger()
     )));
 
 const time = () => {
