@@ -44,10 +44,17 @@ const mapDispatchToProps = (dispatch) => ({
   sendChat: msg => {
     dispatch(actionCreators.sendChat(msg))
   },
+  addMessage: msg => {
+    dispatch(actionCreators.addMessage(msg))
+  },
 })
 const adjustHeight = () => {
   const box = document.getElementById('chatlist')
   box.scrollTop = box.scrollHeight
+}
+
+const compose = (data, cb) => {
+
 }
 
 class Chatroom extends React.Component {
@@ -56,12 +63,25 @@ class Chatroom extends React.Component {
     this.state = {
       messages: []
     }
+    this.fetchChat = this.fetchChat.bind(this);
   }
+
 
   componentDidMount() {
     console.log('chatroom props', this.props)
     this.props.loadChats()
-    this.setState({messages: this.props.messages})
+    const endpoint = this.props.endpoint;
+    const socket = socketIOClient(endpoint);
+    socket.on('RECEIVE_MESSAGE', this.props.addMessage, function (data) {
+      console.log('received message', data)
+      this.fetchChat(data)
+      document.getElementById('chatlist') ? adjustHeight() : ''
+    });
+    document.getElementById('chatlist') ? adjustHeight() : ''
+  }
+
+  fetchChat = data => {
+    this.props.addMessage(data)
   }
 
   sendMessage = event => {
@@ -80,16 +100,6 @@ class Chatroom extends React.Component {
   }
 
   render() {
-    const endpoint = this.props.endpoint;
-    const socket = socketIOClient(endpoint);
-    socket.on('RECEIVE_MESSAGE', function (data) {
-      console.log('received message', data)
-      console.log('chatroom props in socket', this.props)
-      console.log('chatroom state in socket', this.state)
-      this.props.addMessage(data)
-      document.getElementById('chatlist') ? adjustHeight() : ''
-    });
-    document.getElementById('chatlist') ? adjustHeight() : ''
     let chatHistory;
     switch (this.props.status) {
       case 'INITIAL':

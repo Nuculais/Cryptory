@@ -44,9 +44,7 @@ const mapDispatchToProps = (dispatch) => ({
   setEndpoint: url => {
     dispatch(actionCreators.setEndpoint(url))
   },
-  addMessage: msg => {
-    dispatch(actionCreators.addMessage(msg))
-  },
+
 })
 
 const adjustHeight = () => {
@@ -86,7 +84,6 @@ class Profile extends React.Component {
           </Card>
         chatroom = <Chatroom
           name={this.props.username}
-          addMessage={this.props.addMessage}
         />
         break
       default:
