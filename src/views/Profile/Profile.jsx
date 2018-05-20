@@ -63,7 +63,7 @@ class Profile extends React.Component {
                 title={this.props.profile.user.name ? `Hello, ${this.props.profile.user.name.split(' ')[0]}!` : 'Hello there!'}
                 subtitle={`Member since: ${new Date(this.props.profile.user.created_at).toLocaleString().split(',')[0]}`}/>}
             >
-              <img src={this.props.profile.user.avatar} alt=""/>
+              <img src={this.props.profile.user.avatar} height="400" width="400" alt=""/>
             </CardMedia>
             <CardText>
               At Cryptory, you can manage and keep track of your cryptocurrency holdings, check current prices, and even

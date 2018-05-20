@@ -1,20 +1,15 @@
 import React from 'react';
-import ContentInbox from 'material-ui/svg-icons/content/inbox';
-import ActionGrade from 'material-ui/svg-icons/action/grade';
 import ActionFace from 'material-ui/svg-icons/action/face';
 import ActionQuestionAnswer from 'material-ui/svg-icons/action/question-answer';
 import EditorAttachMoney from 'material-ui/svg-icons/editor/attach-money';
 import EditorMultilineChart from 'material-ui/svg-icons/editor/multiline-chart';
-import ContentSend from 'material-ui/svg-icons/content/send';
-import ContentDrafts from 'material-ui/svg-icons/content/drafts';
+import RaisedButton from 'material-ui/RaisedButton';
 import Avatar from 'material-ui/Avatar';
 import Divider from 'material-ui/Divider';
-import ActionInfo from 'material-ui/svg-icons/action/info';
 import {connect} from 'react-redux'
 import {actionCreators} from "../../cryptoryRedux";
 import PropTypes from 'prop-types';
 import {List, ListItem, makeSelectable} from 'material-ui/List';
-import Subheader from 'material-ui/Subheader';
 
 let SelectableList = makeSelectable(List);
 
@@ -72,7 +67,17 @@ function wrapState(ComposedComponent) {
 
 SelectableList = wrapState(SelectableList);
 
-const style = {margin: 5};
+const styles = {
+  mediumIcon: {
+    width: 48,
+    height: 48,
+  },
+  medium: {
+    width: 96,
+    height: 96,
+    padding: 24,
+  },
+};
 
 const mapDispatchToProps = (dispatch) => ({
   setPage: (val) => {
@@ -95,7 +100,7 @@ class Sidebar extends React.Component {
               <Avatar
                 src={this.props.avatar}
                 size={40}
-                style={style}
+                style={{margin: 5}}
               />}
             primaryText={this.props.username}
           />
@@ -126,6 +131,12 @@ class Sidebar extends React.Component {
             leftIcon={<EditorMultilineChart/>}
           />
         </SelectableList>
+        <Divider/>
+        <br/>
+        <div style={{textAlign: 'center'}}>
+          <RaisedButton href={'logout'} label="LOG OUT" style={styles} />
+        </div>
+        <br/>
         <Divider/>
       </div>
     )
