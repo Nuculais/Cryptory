@@ -70,7 +70,7 @@ class Chatroom extends React.Component {
     const socket = socketIOClient(endpoint);
     socket.on('RECEIVE_MESSAGE', function (data) {
       console.log('received message', data)
-      dispatch(actionCreators.addMessage(data))
+      this.props.addMessage(data)
       document.getElementById('chatlist') ? adjustHeight() : ''
     });
     document.getElementById('chatlist') ? adjustHeight() : ''

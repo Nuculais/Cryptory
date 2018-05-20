@@ -144,7 +144,7 @@ export const actionCreators = {
         body: JSON.stringify({user: msg['name'], name: msg['chat']}),
       }).then(response => {
         if (response.ok) {
-          dispatch(actionCreators.addMessage(msg))
+          dispatch(actionCreators.hasError(false))
         } else {
           response.json().then(error => {
             dispatch(actionCreators.hasError(true))
