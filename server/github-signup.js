@@ -2,7 +2,7 @@ const User = require('../model/User')
 const Strategy = require('passport-github').Strategy;
 const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID
 const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET
-const url = process.env.GITHUB_CALLBACK_URL
+const GITHUB_CALLBACK_URL = process.env.GITHUB_CALLBACK_URL
 
 module.exports = new Strategy({
     clientID: GITHUB_CLIENT_ID,
