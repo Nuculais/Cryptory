@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {render} from 'react-dom'
 import {createStore, applyMiddleware, compose} from 'redux'
-import {createLogger} from 'redux-logger'
 import {Provider} from 'react-redux'
 import Profile from './views/Profile/Profile.jsx'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -10,7 +9,6 @@ import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 import lightBaseTheme from "material-ui/styles/baseThemes/lightBaseTheme";
 import {Card} from 'material-ui/Card'
 import {Grid} from 'react-flexbox-grid';
-import { BrowserRouter } from 'react-router-dom'
 
 // Import the reducer and create a store
 import {reducer} from './cryptoryRedux.jsx'
@@ -23,7 +21,6 @@ const store = createStore(
   composeEnhancers(
     applyMiddleware(
       thunkMiddleware,
-      // createLogger()
     )));
 
 const time = () => {
@@ -39,9 +36,7 @@ const AppWithStore = (
         : getMuiTheme(lightBaseTheme)}>
       <Card>
         <Grid fluid>
-          <BrowserRouter>
           <Profile/>
-          </BrowserRouter>
         </Grid>
       </Card>
     </MuiThemeProvider>

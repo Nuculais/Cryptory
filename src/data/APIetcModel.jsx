@@ -2,12 +2,9 @@
 
 const APIetcModel = function () {
 
-  let TimePeriod = null; //Which format? Either a fixed amount of days (or one variable for format
-  //and one for amount) and a function to calculate the elapsed time until now, or two datetimes.
-  //Like "Last 7 days" or "From xx-xx-xx to xx-xx-xx". Or all of them?
   //Addendum: The API requires Unix timestamps
-
-  let currentCurr = 'BTC'; //used when showing data about a selected currency inthe  histogram view
+  let observers = [];
+  let currentCurr = 'BTC'; //used when showing data about a selected currency in the  histogram view
   let Wallet = [];
   let Transactions = [];
   let HistogramData;
@@ -28,6 +25,7 @@ const APIetcModel = function () {
   //Used in the histogram view
   this.setCurrentCurr = function (type) {
     currentCurr = type;
+    update();
   }
 
   this.getCurrentCurr = function () {
@@ -89,16 +87,7 @@ const APIetcModel = function () {
     return Wallet;
   }
 
-  this.setTimePeriod = function (time) {
-    //Histoday has the parameter aggregate which could be useful here maybe.
-
-  }
-  this.getTimePeriod = function () {
-    return TimePeriod;
-  }
-
-
-  //Gets the total value of the user's entire wallet. In euro atm, can be changed if necessary
+  //Gets the total value of the user's entire wallet.
   this.getCurrentWalletValue = function () {
     this.totalwallet = Wallet;
     let currenttotal = 0;
@@ -118,36 +107,49 @@ const APIetcModel = function () {
     //{x: thing2, y: otherthing2} ]}
     //x = time, y = value of currency.
     //So if slidervalue is set to week, there will be 7 x, one for each day. If it's day, there will be 24 x, one for each hour.
-    //Highest y-point in the histogram needs to be higher than the max value that will be returned from the API. How to do this?!
+    //Highest y-point in the histogram needs to be higher than the max value that will be returned from the API. Different currencies
+    //have completely different values, so the max and min Y-points in the chart (VictoryChart in Histogram.jsx) need to be change according
+    //to what currency it is. How to do this?
 
-
+    console.log("histogramData() anropas.");
     let curr = this.getCurrentCurr();
     let now = Date.now();
     let historesult = [];
-    let Data = this.getHistorical(curr, slidervalue).Data;
+    this.getHistorical(curr, slidervalue).then((response) => {
+      let Data = response.Data;
+      var elem;
 
-    if (slidervalue === 'week') {
-      for (let i = 0; i < Data.length; i++) {
-        //x = 'Day '+i, y=Data[i].close
-        elem = {x: 'Day ' + i, y: Data[i].close}; //Can this be done? Or will it be the wrong format?
-        historesult.push(elem);
+      if (slidervalue === 2) { //week
+        for (let i = 0; i < Data.length; i++) {
+          //x = 'Day '+i, y=Data[i].close
+          elem = {x: 'Day ' + i, y: Data[i].close}; //Can this be done? (Viktor says yes)
+          historesult.push(elem);
+        }
       }
-    }
-    else if (slidervalue === 'month') {
-      for (let i = 0; i < Data.length; i++) {
-        //x = 'Day '+i, y=Data[i].close
-        elem = {x: 'Day ' + i, y: Data[i].close};
-        historesult.push(elem);
+      else if (slidervalue === 3) { //month
+        for (let i = 0; i < Data.length; i++) {
+          //x = 'Day '+i, y=Data[i].close
+          elem = {x: 'Day ' + i, y: Data[i].close};
+          historesult.push(elem);
+        }
       }
-    }
-    else if (slidervalue === 'day') {
-      for (let i = 0; i < Data.length; i++) {
-        //x = 'Day '+i, y=Data[i].close
-        elem = {x: 'Hour ' + i, y: Data[i].close};
-        historesult.push(elem);
+      else if (slidervalue === 1) { //day
+        for (let i = 0; i < Data.length; i++) {
+          //x = 'Day '+i, y=Data[i].close
+          elem = {x: 'Hour ' + i, y: Data[i].close};
+          historesult.push(elem);
+        }
       }
-    }
-    return historesult;
+      console.log(historesult);
+      //return historesult;
+      return new Promise((resolve, reject) => {
+        if (historesult.length > 0) {
+          resolve(historesult)
+        } else {
+          reject("Error")
+        }
+      })
+    });
   }
 
 
@@ -206,14 +208,21 @@ const APIetcModel = function () {
   this.getHistorical = function (curr, timeperiod) {
     //The price at a particular point in time. Calls histoday/histohour.
     //Limit is the number of data points to return (so 24 for histohour, 7 for a week and 30 for a month).
+
+    console.log("getHistorical anropas tydligen.");
+    console.log(curr);
+    console.log(timeperiod);
+
     let url = 'https://min-api.cryptocompare.com/data/'
 
     let datenow = Date.now(); //returns a unix time stamp
+    console.log(datenow);
     let datepast;
     let limit;
 
+    //atm it never evaluates to any of these
     //return data for one week
-    if (timeperiod === 'week') {
+    if (timeperiod == 2) {
       limit = 7;
       datepast = new Date();
       datepast.setDay(datepast.getDay() - 7);
@@ -221,18 +230,23 @@ const APIetcModel = function () {
       datepast.setMilliseconds(0);
       datepast = datepast / 1000;
 
-      url += 'histoday?fsym=' + curr + '&tsyms=SEK&limit=' + limit + '&aggregate=1&toTs=' + datenow; //Vafan är det datepast eller datenow?!
+      url += 'histoday?fsym=' + curr + '&tsym=SEK&limit=' + limit + '&aggregate=1&toTs=' + datenow; //Vafan är det datepast eller datenow?!
+      console.log(url);
     }
     //return data for one month
-    else if (timeperiod === 'month') {
+    else if (timeperiod == 3) {
       limit = 30;
-      url += 'histoday?fsym=' + curr + '&tsyms=SEK&limit=' + limit + '&aggregate=1&toTs=' + datenow;
+      url += 'histoday?fsym=' + curr + '&tsym=SEK&limit=' + limit + '&aggregate=1&toTs=' + datenow;
+      console.log(url);
     }
     //return data for one day
-    else if (timepriod === 'day') {
+    else if (timeperiod == 1) {
       limit = 24;
-      url += url += 'histohour?fsym=' + curr + '&tsyms=SEK&limit=' + limit + '&aggregate=1&toTs=' + datenow;
+      console.log(limit);
+      url += 'histohour?fsym=' + curr + '&tsym=SEK&limit=' + limit + '&aggregate=1&toTs=' + datenow;
+      console.log(url);
     }
+
 
     return (fetch(url)
       .then(processResponse)
@@ -247,6 +261,17 @@ const APIetcModel = function () {
     }
     throw response;
   }
+
+  const handleError = function (error) {
+    if (error.json) {
+      error.json().then(error => {
+        console.error('API Error:', error.message || error)
+      })
+    } else {
+      console.error('API Error:', error.message || error)
+    }
+  }
+
 
   //Observer pattern
   this.addObserver = function (observer) {

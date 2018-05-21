@@ -65,7 +65,21 @@ app.get('/logout',
 app.get('/profile',
   require('connect-ensure-login').ensureLoggedIn(),
   function (req, res) {
-    res.render('profile', {user: req.user.username, port: process.env.PORT});
+    res.render('profile', {user: req.user.username});
+  });
+
+
+app.get('/histogram',
+  require('connect-ensure-login').ensureLoggedIn(),
+  function (req, res) {
+    res.render('histogram', {user: req.user.username});
+  });
+
+
+app.get('/wallet',
+  require('connect-ensure-login').ensureLoggedIn(),
+  function (req, res) {
+    res.render('wallet', {user: req.user.username});
   });
 
 app.get('/login/github',

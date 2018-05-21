@@ -5,17 +5,19 @@ const webpackHotMiddleware = require("webpack-hot-middleware");
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 require('dotenv').config();
-
+const fetch = require('node-fetch');
 
 // mongo
 const User = require('./model/User')
 const Coin = require('./model/Coin')
+const Chats = require('./model/Chats')
 const mongoose = require('mongoose')
 const uri = `mongodb://${encodeURIComponent('cryptoryadmin')}:${encodeURIComponent('cryptory123456789')}@ds247569.mlab.com:47569/heroku_d783vzs7`
 const db = mongoose.connect(uri);
 // mongoose.connect('mongodb://localhost:27017/cryptory');
 // const db = mongoose.connection
 // logging
+// mongoose.set('debug', true);
 mongoose.Promise = global.Promise;
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
@@ -47,7 +49,7 @@ app.set('view engine', 'ejs');
 app.use(helmet());
 app.use(require('morgan')('combined'));
 app.use(require('cookie-parser')('alcovewonderwhy99save'));
-// app.use(require('body-parser').urlencoded({extended: true}));
+app.use(require('body-parser').urlencoded({extended: true}));
 app.use(require('express-session')({
   secret: 'keyboardcatanalyze',
   resave: true,
@@ -57,7 +59,7 @@ app.use(require('express-session')({
   proxy: true,
   maxAge: 54000000
 }));
-app.use(bodyParser.json())
+// app.use(bodyParser.json())
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -85,7 +87,21 @@ app.get('/logout',
 app.get('/profile',
   require('connect-ensure-login').ensureLoggedIn(),
   function (req, res) {
+    // console.log('\n\n\nprofile call API', req.user, '\n\n\n')
     res.render('profile', {user: req.user.username});
+  });
+
+app.get('/histogram',
+  require('connect-ensure-login').ensureLoggedIn(),
+  function (req, res) {
+    res.render('histogram', {user: req.user.username});
+  });
+
+
+app.get('/wallet',
+  require('connect-ensure-login').ensureLoggedIn(),
+  function (req, res) {
+    res.render('wallet', {user: req.user.username});
   });
 
 app.get('/login/github',
@@ -103,15 +119,15 @@ app.get('/login/github/return',
 //   }
 //   res.render('/profile');
 // });
-app.get('/api/user/:id', (req, res) => {
+app.get('/api/user/:username', (req, res) => {
   require('connect-ensure-login').ensureLoggedIn(),
-    User.findOne(req.id,
+    User.findOne({username: JSON.parse(req.params.username)},
       function (err, obj) {
         if (err) {
           res.send(err);
           return;
         }
-        res.json({data: obj});
+        res.json(obj);
       });
 });
 
@@ -234,9 +250,78 @@ app.get('/api/coin', (req, res) => {
 //     );
 // });
 
-// updating every 30 seconds
-const loadCurrencyData = require('./server/currency_api.js');
-loadCurrencyData();
+// const feed = require('./server/feed');
+
+
+app.get("/chats", (req, res) => {
+  Chats.find({}, (error, chats) => {
+    if (error) {
+      res.send(error)
+    }
+    else {
+      res.send(chats)
+    }
+  }).sort({'date': -1}).limit(7)
+})
+
+app.put('/chats/:usr/:msg', async (req, res) => {
+  let chat;
+  try {
+    chat = new Chats({name: req.params.usr, chat: req.params.msg});
+    chat.save()
+    res.sendStatus(200)
+    io.emit("RECEIVE_MESSAGE", req.params.msg)
+  } catch (error) {
+    res.status(500).json({message: `format: ${error}`});
+  }
+});
+
+
+// const http = require("http");
+// const socketIo = require("socket.io");
+// const server = http.createServer(app);
+//
+// const io = socketIo(server);
+// // Listen for a connection
+// io.on('connection', socket => {
+//   // Create message
+//   socket.on('chat message', params => {
+//     Chats.save(nfig, params, (message) => {
+//       io.emit('chat message', message);
+//     })
+//   })
+// })
+
+
+// let interval;
+// io.on('connection', socket => {
+//   console.log('User connected. Socket id %s', socket.id);
+//   if (interval) {
+//     clearInterval(interval);
+//   }
+//   interval = setInterval(() => currencyAPI(socket), 5000);
+//   socket.on("disconnect", () => {
+//     console.log("Client disconnected");
+//   });
+// });
+// const coinPort = 4002
+// server.listen(coinPort, () => console.log(`Ticker listening on port ${coinPort}`));
+// const currencyAPI = require('./server/currency_api')
+
+// chat calls
+// const io2 = socketIo(server);
+// io2.on('connection', socket => {
+//   console.log('User connected. Socket id', socket.id);
+//   socket.on('chat', function (msg) {
+//     socket.broadcast.emit('chat', msg);
+//   });
+//   socket.on("disconnect", () => {
+//     console.log("Client disconnected");
+//   });
+// });
+
+// const chatPort = 4002
+// server.listen(chatPort, () => console.log(`Chatroom listening on port ${chatPort}`));
 
 // development
 // Tell express to use the webpack-dev-middleware
@@ -249,9 +334,22 @@ app.use(webpackHotMiddleware(compiler));
 
 const port = process.env.PORT || 3000
 
-// Serve the files on port 3000.
-app.listen(port, function () {
-  console.log('Example app listening on port 3000!\n');
+const server = app.listen(port, function () {
+  console.log('Cryptory listening on port 3000!\n');
+});
+
+
+// Initialize socket.io
+const io = require('socket.io').listen(server);
+
+io.on('connection', socket => {
+  console.log('User connected. Socket id', socket.id);
+  socket.on('SEND_MESSAGE', function (data) {
+    io.emit('RECEIVE_MESSAGE', data);
+  })
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+  });
 });
 
 
