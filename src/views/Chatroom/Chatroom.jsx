@@ -25,13 +25,18 @@ const styles = {
     height: 500,
     overflowY: 'auto',
   },
+  chat: {
+    color: 'green'
+  }
+
 };
 
 const mapStateToProps = (state) => ({
   messages: state.messages,
   status: state.chatStatus,
   endpoint: state.endpoint,
-  message: state.message
+  message: state.message,
+  username: state.user.username
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -58,13 +63,17 @@ class Chatroom extends React.Component {
 
 
   componentDidMount() {
-    this.props.loadChats()
     const endpoint = this.props.endpoint;
     const socket = socketIOClient(endpoint);
     socket.on('RECEIVE_MESSAGE', this.props.addMessage, function (data) {
       this.fetchChat(data)
     });
-    document.getElementById('chatlist') ? this.adjustHeight() : null
+    this.props.loadChats()
+  }
+
+  componentDidUpdate() {
+    if (document.getElementById('chatlist'))
+      this.adjustHeight()
   }
 
   fetchChat = data => {
@@ -97,7 +106,7 @@ class Chatroom extends React.Component {
         chatHistory = ''
         break;
       case 'LOADING':
-        chatHistory = <div id={'chatlist'}><Progress/></div>
+        chatHistory = <div><Progress/></div>
         break
       case 'LOADED':
         chatHistory =
@@ -107,12 +116,16 @@ class Chatroom extends React.Component {
               {this.props.messages.map(item => {
                 return <div key={`${item._id}`}>
                   <Divider/>
-                  <ListItem
-                    primaryText={`${item.name}`}
-                    leftAvatar={<CommunicationChatBubble/>}
+                  <ListItem style={item.name === this.props.name ? {color: 'green'} : {color: 'black'}}
+                            primaryText={`${item.name} on ${new Date(item.date).toLocaleString().split(',')[0]} at ${new Date(item.date).toLocaleString().split(',')[1]}`}
+                            leftAvatar={<CommunicationChatBubble/>}
                   >
                   </ListItem>
-                  {`[${new Date(item.date).toLocaleString().split(',')[0]} - ${new Date(item.date).toLocaleString().split(',')[1]} ]:    ${item.chat}`}
+                  <div style={{marginLeft: '20px', marginBottom: '10px', marginRight: '25x'}}>
+                    <div style={item.name === this.props.name ? {textAlign: 'right'} : {textAlign: 'left'}}>
+                      {`${item.chat}`}
+                    </div>
+                  </div>
                   <Divider/>
                 </div>
               })}
