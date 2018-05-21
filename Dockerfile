@@ -11,5 +11,5 @@ COPY . /usr/src/app/
 RUN cp -a /tmp/node_modules /usr/src/app/
 
 EXPOSE 3000
-CMD [ "yarn", "run", "server" ]
+CMD [ "yarn", "run", "local" ]
 
