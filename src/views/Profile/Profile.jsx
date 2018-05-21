@@ -40,6 +40,14 @@ const mapDispatchToProps = (dispatch) => ({
   },
 })
 
+const styles = {
+  image: {
+    height: '100%',
+    width: '100%',
+  }
+}
+
+
 class Profile extends React.Component {
 
   componentDidMount() {
@@ -63,7 +71,7 @@ class Profile extends React.Component {
                 title={this.props.profile.user.name ? `Hello, ${this.props.profile.user.name.split(' ')[0]}!` : 'Hello there!'}
                 subtitle={`Member since: ${new Date(this.props.profile.user.created_at).toLocaleString().split(',')[0]}`}/>}
             >
-              <img src={this.props.profile.user.avatar} height="400" width="400" alt=""/>
+              <img src={this.props.profile.user.avatar} height="100%" width="400" alt=""/>
             </CardMedia>
             <CardText>
               At Cryptory, you can manage and keep track of your cryptocurrency holdings, check current prices, and even
@@ -104,7 +112,9 @@ class Profile extends React.Component {
                     <div className="navbar" style={{'height': '800px'}}>
                       <div>
                         <img src="https://i.imgur.com/s5krUs0.png"
-                             style={{marginTop: '20px', marginBottom: '20px'}}/>
+                             // style={{marginTop: '20px', marginBottom: '20px'}}/>
+                        style={styles.image}/>
+
                       </div>
                       <Divider/>
                       <div>

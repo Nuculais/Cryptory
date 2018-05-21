@@ -1,41 +1,30 @@
 import React, {Component} from 'react';
-import {Grid} from 'react-flexbox-grid';
-import Welcome from './views/Welcome/Welcome';
 import {render} from "react-dom";
-import {Card} from 'material-ui/Card';
-import {Row, Col} from 'react-flexbox-grid';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
+
+const styles = {
+  welcome: {
+    textAlign: 'center',
+    fontFamily: 'Roboto, sans-serif'
+  }
+}
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <Row>
-          <Col xs={12}>
-            <div className="pageLayout">
-              <Row start="xs">
-                <Col xs={6}>
-                  <Card>
-                    <Welcome/>
-                  </Card>
-                </Col>
-              </Row>
-            </div>
-          </Col>
-        </Row>
+      <div style={styles.welcome}>
+        <img src="https://i.imgur.com/s5krUs0.png" height="100%" width="400px" alt="Cryptory"/>
+        <br/>
+        <br/>
+        <p>Get ready to maintain your crypto transactions..</p>
+        <p>Please <a href={'/login/github'}>login</a> with GitHub!</p>
       </div>
     )
   }
 }
 
 render(
-  <MuiThemeProvider>
-    <Card>
-      <Grid fluid>
-        <App/>
-      </Grid>
-    </Card>
-  </MuiThemeProvider>
+  <App/>
   ,
   document.getElementById('app'));
 

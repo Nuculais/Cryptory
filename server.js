@@ -111,7 +111,7 @@ app.get('/chats', (req, res) => {
     else {
       res.send(chats)
     }
-  }).sort({'date': -1}).limit(7)
+  }).sort({'date': -1}).limit(6)
 })
 
 app.put('/chats/:usr/:msg', async (req, res) => {
@@ -129,8 +129,6 @@ const port = process.env.PORT || 3000
 const server = app.listen(port, function () {
   console.log('Cryptory app listening on port' + port + '!\n');
 });
-console.log('server', server)
-
 
 const io = require('socket.io').listen(server);
 
