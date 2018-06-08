@@ -14,6 +14,13 @@ const APIetcModel = function () {
     type: "",
     amount: 0
   };
+  //A transaction. Gets stored in Transactions[]
+  let Transaction = {
+    date: null, //Unix timestamp. Use Date.now();
+    type: "",
+    amount: 0,
+    originalValue: 0 //What that amount cost when buying. In euro.
+  };
 
   //Converts a date to a unix timestamp. Example: year=2017, month=08, day=16 will be 1502841600. Must be in that format.
   this.getUnixTime = function (year, month, day) {
@@ -25,7 +32,7 @@ const APIetcModel = function () {
   //Used in the histogram view
   this.setCurrentCurr = function (type) {
     currentCurr = type;
-    update();
+    notifyObservers();
   }
 
   this.getCurrentCurr = function () {
@@ -39,13 +46,8 @@ const APIetcModel = function () {
     return HistogramData;
   }
 
-  //A transaction. Gets stored in Transctions[]
-  let Transaction = {
-    date: null, //Unix timestamp. Use Date.now();
-    type: "",
-    amount: 0,
-    originalValue: 0 //What that amount cost when buying. In Sek.
-  };
+
+
 
   this.getCurrency = function (ty, am) {
     let curr = Object.create(Currency);
@@ -55,33 +57,38 @@ const APIetcModel = function () {
     return curr;
   }
 
-  this.getTransaction = function (da, ty, am) {
+  this.makeNewTransaction = function(am) {
     let tra = Object.create(Transaction);
-    tra.date = da.//needs to be a unix timestamp.
-      tra.type = ty;
-    tra.amount = am;
 
-    return tra;
+    tra.date = Date.now();//needs to be a unix timestamp.
+    tra.type = this.getCurrentCurr();
+    tra.amount = am;
+    tra.originalValue = (this.getCurrentPrice(this.getCurrentCurr())*am);
+
+    this.addToWallet(this.getCurrentCurr(),am);
+    Transactions.push(tra);
+
+    alert("Transaction registered!");
+    console.log(Transactions[0]);
   }
 
   //Adds or subtracts bought currency from the wallet.
-  this.addToWallet = function (curr) {
+  this.addToWallet = function (amount) {
     //curr is a Currency object from a recent transaction. curr.amount can be negative (indicating selling, positive indicating buying)
 
+    let coin = this.getCurrentCurr();
+
     for (let i = 0; i < Wallet.length; i++) {
-      if (Wallet[i].type === curr.type) {
-        Wallet[i].amount += curr.amount;
+      if (Wallet[i].type === coin) {
+        Wallet[i].amount += amount;
       }
       else {
-        this.Wallet.push(curr);
+        let newcurr = getCurrency(coin, amount);
+        this.Wallet.push(newcurr);
       }
+      notifyObservers();
     }
   }
-
-  this.addTransaction = function (tra) {
-    Transactions.push(tra);
-  }
-
 
   this.getWallet = function () {
     return Wallet;
@@ -91,12 +98,19 @@ const APIetcModel = function () {
   this.getCurrentWalletValue = function () {
     this.totalwallet = Wallet;
     let currenttotal = 0;
-    for (let c = 0; c < totalwallet.length; c++) {
-      let currCost = this.getCurrentPrice(totalwallet[c].type, "SEK");
-      let usertot = currCost * totalwallet[c].amount;
-      currenttotal += usertot;
+
+    if(Wallet.length > 0){
+      for (let c = 0; c < totalwallet.length; c++) {
+        let currCost = this.getCurrentPrice(totalwallet[c].type);
+        let usertot = currCost * totalwallet[c].amount;
+        currenttotal += usertot;
+      }
+      return currenttotal;
     }
-    return currenttotal;
+    else{
+      return 0;
+
+    }
   }
 
 
@@ -115,7 +129,7 @@ const APIetcModel = function () {
     let curr = this.getCurrentCurr();
     let now = Date.now();
     let historesult = [];
-    this.getHistorical(curr, slidervalue).then((response) => {
+    this.getHistorical(curr, slidervalue).then((response)=>{
       let Data = response.Data;
       var elem;
 
@@ -154,9 +168,9 @@ const APIetcModel = function () {
 
 
   //Gets the current price for a particular type or types of currency
-  this.getCurrentPrice = function (curr, tocurr) {
-    //Current price of the chosen cpin. Calls price.
-    let url = 'https://min-api.cryptocompare.com/data/price?fsym=' + curr + '&tsyms=' + tocurr;
+  this.getCurrentPrice = function (curr) {
+    //Current price of the chosen coin. Calls price. In euro.
+    let url = 'https://min-api.cryptocompare.com/data/price?fsym=' + curr + '&tsyms=EUR';
 
     return (fetch(url)
       .then(processResponse)
@@ -190,18 +204,23 @@ const APIetcModel = function () {
 
     let tran = this.Transactions;
     let profit = 0;
-
-    if (what === all) {
-      for (let i = 0; i < tran.length; i++) {
-        profit += (tran[i].originalValue * tran[i].amount) - (this.getCurrentPrice(tran[i].type, 'SEK') * tran[i].amount);
-      }
-    }
-    else {
-      for (let i = 0; i < tran.length; i++) {
-        if (tran[i].type === what) {
+    if(tran.length > 0){
+      if (what === all) {
+        for (let i = 0; i < tran.length; i++) {
           profit += (tran[i].originalValue * tran[i].amount) - (this.getCurrentPrice(tran[i].type, 'SEK') * tran[i].amount);
         }
       }
+      else {
+        for (let i = 0; i < tran.length; i++) {
+          if (tran[i].type === what) {
+            profit += (tran[i].originalValue * tran[i].amount) - (this.getCurrentPrice(tran[i].type, 'SEK') * tran[i].amount);
+          }
+        }
+      }
+      return profit;
+    }
+    else{
+      return 0;
     }
   }
 

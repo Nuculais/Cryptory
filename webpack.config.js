@@ -10,7 +10,7 @@ if (process.env.LOCAL) {
     profile: ['./src/index.jsx', 'webpack-hot-middleware/client', 'react-hot-loader/patch'],
     wallet: ['./src/views/Histogram/Histogram.jsx', 'webpack-hot-middleware/client', 'react-hot-loader/patch'],
     histogram: ['./src/views/Wallet/Wallet.jsx', 'webpack-hot-middleware/client', 'react-hot-loader/patch'],
-    vendor: ['react', 'react-dom', 'react-router', 'react-redux', 'redux', 'redux-thunk'],
+    vendor: ['react', 'react-dom', 'react-redux', 'redux', 'redux-thunk'],
   }
 } else {
   entry = {

@@ -24,8 +24,7 @@ class App extends Component {
 }
 
 render(
-  <App/>
-  ,
+  <App/>,
   document.getElementById('app'));
 
 if (module.hot) {

@@ -120,19 +120,17 @@ class Sidebar extends React.Component {
             primaryText="Chatroom"
             leftIcon={<ActionQuestionAnswer/>}
           />
+          <ListItem
+            value={2}
+            primaryText="Wallet"
+            leftIcon={<EditorAttachMoney/>}
+          />
+          <ListItem
+            value={3}
+            primaryText="Histogram"
+            leftIcon={<EditorMultilineChart/>}
+          />
         </SelectableList>
-        <Divider/>
-        <br/>
-        <div style={{textAlign: 'center'}}>
-          <RaisedButton href="/wallet" label="Wallet" style={styles}/>
-        </div>
-        <br/>
-        <Divider/>
-        <br/>
-        <div style={{textAlign: 'center'}}>
-          <RaisedButton href="/histogram" label="Histogram" style={styles}/>
-        </div>
-        <br/>
         <Divider/>
         <br/>
         <div style={{textAlign: 'center'}}>

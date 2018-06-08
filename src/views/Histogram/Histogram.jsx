@@ -1,6 +1,6 @@
-//This is the view displaying histograms etc.
-import React, {Component} from 'react';
-import {render} from 'react-dom';
+import React from 'react';
+import {Card, CardHeader} from 'material-ui/Card';
+import {connect} from 'react-redux'
 import {VictoryChart, VictoryLine} from 'victory'; //Check for actual path.
 // import './histogram.css';
 import {modelInstance} from '../../data/APIetcModel';
@@ -12,7 +12,15 @@ import ReactBootstrapSlider from 'react-bootstrap-slider';
 //Also import react-bootstrap-slider from github/brownieboy
 //import the other user data somehow
 
-class Histogram extends Component {
+const mapStateToProps = (state) => ({
+  messages: state.messages,
+  status: state.chatStatus,
+  endpoint: state.endpoint,
+  message: state.message,
+  username: state.user.username
+})
+
+class Histogram extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -29,19 +37,20 @@ class Histogram extends Component {
     modelInstance.addObserver(this);
     //this.modelInstance.histogramData(slidervalue);
     //Arvids förslag: Gör ett anrop till getHistorical direkt. Gör två versioner av histogramData. Den ena kan anropas i början, den andra när det har laddat, för att undvika unresolved promises.
-    // modelInstance.histogramData(1).then((histo) =>{ //This goes in update too
-    //   _this.setState({
-    //     status: 'LOADED',
-    //     //histogramdata: modelInstance.histogramData(1),
-    //     slidervalue: 1,
-    //     currentCurr: 'BTC',
-    //     histo: histo
-    //   })
-    // }).catch(() => {
-    //   _this.setState({
-    //     status: 'ERROR'
-    //   })
-    // })
+    modelInstance.histogramData(1).then((histo) => { //This goes in update too
+
+      _this.setState({
+        status: 'LOADED',
+        //histogramdata: modelInstance.histogramData(1),
+        slidervalue: 1,
+        currentCurr: 'BTC',
+        histo: histo
+      })
+    }).catch(() => {
+      _this.setState({
+        status: 'ERROR'
+      })
+    })
   }
 
   componentWillUnmount = () => {
@@ -62,7 +71,7 @@ class Histogram extends Component {
   }
 
   OnSliderChangeValue = (e) => {
-    this.setState({ slidervalue: e.target.value });
+    this.setState({slidervalue: e.target.value});
   }
 
   render() {
@@ -77,7 +86,8 @@ class Histogram extends Component {
             <div className='col-md-10'>
               <div className='col-md-5'>
                 <select id='currenciesdropdown' onChange={this.newCurr}>
-                  <option>All the coins! Or rather, one option for each available coin in the API. (Note: Just saw that that
+                  <option>All the coins! Or rather, one option for each available coin in the API. (Note: Just saw that
+                    that
                     is 4796 coins, so... nope. We pick 10 or so.)
                   </option>
                   <option value='BTC'>Bitcoin</option>
@@ -99,7 +109,7 @@ class Histogram extends Component {
               <div className='row' id='graphOfSelectedCurrency'>
                 <VictoryChart>
                   <VictoryLine
-                    data={histo}
+                    // data={histo}
                   />
                 </VictoryChart>
                 <ReactBootstrapSlider
@@ -107,7 +117,7 @@ class Histogram extends Component {
                   min={1}
                   step={1}
                   ticks={[1, 2, 3]}
-                  ticks_labels = {["Day", "Week", "Month"]}
+                  ticks_labels={["Day", "Week", "Month"]}
                   tooltip="hide"
                   change={this.state.OnSliderChangeValue}
                   value={this.state.slidervalue}
@@ -125,15 +135,17 @@ class Histogram extends Component {
           </div>
         break;
     }
-    return(
-      <div>{histogram}</div>
+    return (
+      <div>
+        <Card style={{textAlign: 'center', height: "50px", marginTop: '25px', backgroundColor: 'rgb(200, 200, 200)'}}>
+          <CardHeader title={'Histogram'}/>
+        </Card>
+        <Card>
+          {histogram}
+        </Card>
+      </div>
     );
-  }}
-
-render(
-  <Histogram/>,
-  document.getElementById('histogram'));
-
-if (module.hot) {
-  module.hot.accept();
+  }
 }
+
+export default connect(mapStateToProps)(Histogram)
