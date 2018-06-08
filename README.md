@@ -15,7 +15,7 @@ $ yarn run local
 #### OR
 ```shell
 $ docker-compose build
-$ docker-compose uo
+$ docker-compose up
 ```
 
 ## WHAT IT IS
