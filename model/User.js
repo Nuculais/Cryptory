@@ -46,6 +46,15 @@ const userSchema = new mongoose.Schema({
     website: {type: String, default: ''},
     picture: {type: String, default: ''}
   },
+
+  wallet: {
+    type: Array,
+    default: ''
+  },
+  transaction: {
+    type: Array,
+    default: ''
+  }
 });
 
 module.exports = mongoose.model('User', userSchema)
