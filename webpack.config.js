@@ -8,8 +8,7 @@ if (process.env.LOCAL) {
   entry = {
     app: ['./src/App.jsx', 'webpack-hot-middleware/client', 'react-hot-loader/patch'],
     profile: ['./src/index.jsx', 'webpack-hot-middleware/client', 'react-hot-loader/patch'],
-    wallet: ['./src/views/Histogram/Histogram.jsx', 'webpack-hot-middleware/client', 'react-hot-loader/patch'],
-    histogram: ['./src/views/Wallet/Wallet.jsx', 'webpack-hot-middleware/client', 'react-hot-loader/patch'],
+    histogram: ['./src/views/Histogram/Histogram.jsx', 'webpack-hot-middleware/client', 'react-hot-loader/patch'],
     vendor: ['react', 'react-dom', 'react-redux', 'redux', 'redux-thunk'],
   }
 } else {
@@ -17,7 +16,6 @@ if (process.env.LOCAL) {
     app: ['./src/App.jsx'],
     profile: ['./src/index.jsx'],
     histogram: ['./src/views/Histogram/Histogram.jsx'],
-    wallet: ['./src/views/Wallet/Wallet.jsx'],
     vendor: ['react', 'react-dom', 'react-redux', 'redux', 'redux-thunk'],
   }
 }

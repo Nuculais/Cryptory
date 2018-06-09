@@ -24,7 +24,6 @@ module.exports = new Strategy({
       someId: profile.id,
       email: profile.username + '@github.com',
       avatar: profile.photos[0].value,
-      following: ['BTC','ETH','ALT']
     };
     // update the User if s/he exists or add a new User
     User.findOneAndUpdate(searchQuery, updates, function (err, user) {

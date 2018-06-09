@@ -28,7 +28,9 @@ export const types = {
   PROFILE_STATUS: "PROFILE_STATUS",
   SEND_MESSAGE: "SEND_MESSAGE",
   SET_PAGE: "SET_PAGE",
-  SET_ENDPOINT: "SET_ENDPOINT"
+  SET_CURRENCY: "SET_CURRENCY",
+  SET_ENDPOINT: "SET_ENDPOINT",
+  SET_TRANSACTION_AMOUNT: "SET_TRANSACTION_AMOUNT"
 };
 
 // Helper functions to dispatch actions, optionally with payloads
@@ -43,6 +45,9 @@ export const actionCreators = {
   setMessage: item => {
     return {type: types.SET_MESSAGE, payload: item};
   },
+  setTransactionAmount: item => {
+    return {type: types.SET_TRANSACTION_AMOUNT, payload: item};
+  },
   add_relevant: item => {
     return {type: types.ADD_RELEVANT, payload: item};
   },
@@ -54,6 +59,9 @@ export const actionCreators = {
   },
   setUser: user => {
     return {type: types.SET_USER, payload: user};
+  },
+  setCurrency: fiat => {
+    return {type: types.SET_CURRENCY, payload: fiat};
   },
   setLoginStatus: bool => {
     return {type: types.LOGIN_STATUS, payload: bool};
@@ -200,9 +208,10 @@ const initialState = {
   normalToggle: false,
   relevantToggle: false,
   endpoint:'https://murmuring-sea-20139.herokuapp.com' ,
-  currencies: [],
+  currency: '',
   messages: [],
-  page: 'profile'
+  page: 'profile',
+  transactionAmount: 0
 }
 
 
@@ -304,6 +313,12 @@ export const reducer = (state = initialState, action) => {
       return {
         ...state,
         message: payload,
+      };
+    }
+    case types.SET_TRANSACTION_AMOUNT: {
+      return {
+        ...state,
+        transactionAmount: payload,
       };
     }
     case types.SET_MESSAGES: {

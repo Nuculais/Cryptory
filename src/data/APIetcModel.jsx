@@ -1,5 +1,8 @@
 //This is where the API calls to Cryptocompare are made
 
+import axios from 'axios'
+import {actionCreators} from "../cryptoryRedux";
+
 const APIetcModel = function () {
 
   //Addendum: The API requires Unix timestamps
@@ -47,8 +50,6 @@ const APIetcModel = function () {
   }
 
 
-
-
   this.getCurrency = function (ty, am) {
     let curr = Object.create(Currency);
     curr.type = ty;
@@ -57,25 +58,24 @@ const APIetcModel = function () {
     return curr;
   }
 
-  this.makeNewTransaction = function(am) {
+  this.makeNewTransaction = function (id, am) {
     let tra = Object.create(Transaction);
 
     tra.date = Date.now();//needs to be a unix timestamp.
     tra.type = this.getCurrentCurr();
     tra.amount = am;
-    tra.originalValue = (this.getCurrentPrice(this.getCurrentCurr())*am);
+    tra.originalValue = (this.getCurrentPrice(this.getCurrentCurr()) * am);
 
-    this.addToWallet(this.getCurrentCurr(),am);
+    this.addToWallet(this.getCurrentCurr(), am);
     Transactions.push(tra);
-
+    this.pushData(id, Transactions, 'transactions')
     alert("Transaction registered!");
     console.log(Transactions[0]);
   }
 
   //Adds or subtracts bought currency from the wallet.
-  this.addToWallet = function (amount) {
+  this.addToWallet = function (id, amount) {
     //curr is a Currency object from a recent transaction. curr.amount can be negative (indicating selling, positive indicating buying)
-
     let coin = this.getCurrentCurr();
 
     for (let i = 0; i < Wallet.length; i++) {
@@ -86,20 +86,67 @@ const APIetcModel = function () {
         let newcurr = getCurrency(coin, amount);
         this.Wallet.push(newcurr);
       }
+      this.pushData(id, Wallet, 'wallet')
       notifyObservers();
     }
   }
 
-  this.getWallet = function () {
-    return Wallet;
+  this.pushData = (id, val, type) => {
+    let obj = type === 'wallet' ? Wallet : Transactions
+    const url = `/api/${type}/"${id}"`
+    let updates = {
+      [type]: val
+    }
+    fetch(url, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(updates),
+    }).then(response => {
+      if (response.ok) {
+        this.getData(id, type)
+      } else {
+        response.json().then(error => {
+          handleError(error)
+        });
+      }
+    }).catch(err => {
+      handleError(err)
+    });
   }
 
-  //Gets the total value of the user's entire wallet.
-  this.getCurrentWalletValue = function () {
-    this.totalwallet = Wallet;
+  this.getData = function (id, type) {
+    let obj = type === 'wallet' ? Wallet : Transactions
+    const url = `/api/user/"${id}"`
+    fetch(url).then(response => {
+      if (response.ok) {
+        response.json().then(data => {
+          fetch(url).then(response => {
+            if (response.ok) {
+              response.json().then(data => {
+                console.log('getData data', data)
+                obj = data.type
+              })
+            }
+          })
+        });
+      } else {
+        response.json().then(error => {
+          handleError(error)
+        });
+      }
+    }).catch(err => {
+      handleError(err)
+    });
+    return obj
+  }
+
+//Gets the total value of the user's entire wallet.
+  this.getCurrentWalletValue = function (id) {
+    this.getData(id, 'wallet')
+    const totalwallet = Wallet;
     let currenttotal = 0;
 
-    if(Wallet.length > 0){
+    if (Wallet.length > 0) {
       for (let c = 0; c < totalwallet.length; c++) {
         let currCost = this.getCurrentPrice(totalwallet[c].type);
         let usertot = currCost * totalwallet[c].amount;
@@ -107,14 +154,13 @@ const APIetcModel = function () {
       }
       return currenttotal;
     }
-    else{
+    else {
       return 0;
 
     }
   }
 
-
-  //Prepares data for display in the histogram view
+//Prepares data for display in the histogram view
   this.histogramData = function (slidervalue) {
     //slidervalue = chosen time period
     //Data format: data={[  {x: thing, y: otherthing},
@@ -129,7 +175,7 @@ const APIetcModel = function () {
     let curr = this.getCurrentCurr();
     let now = Date.now();
     let historesult = [];
-    this.getHistorical(curr, slidervalue).then((response)=>{
+    this.getHistorical(curr, slidervalue).then((response) => {
       let Data = response.Data;
       var elem;
 
@@ -167,7 +213,7 @@ const APIetcModel = function () {
   }
 
 
-  //Gets the current price for a particular type or types of currency
+//Gets the current price for a particular type or types of currency
   this.getCurrentPrice = function (curr) {
     //Current price of the chosen coin. Calls price. In euro.
     let url = 'https://min-api.cryptocompare.com/data/price?fsym=' + curr + '&tsyms=EUR';
@@ -197,14 +243,15 @@ const APIetcModel = function () {
     return info;
   }
 
-  this.getComparison = function (what) {
+  this.getComparison = function (id, what) {
     //Compares the user's wallet's value when they bought it and today; in other words, calculates the profit/loss.
     //Can work for the entire wallet (what==all) or for one currency (what==x).
     //TODO: rewrite this so it uses tran.originalValue instead of making a call to getHistorical()
+    this.getData(id, 'transactions')
 
-    let tran = this.Transactions;
+    let tran = Transactions;
     let profit = 0;
-    if(tran.length > 0){
+    if (tran.length > 0) {
       if (what === all) {
         for (let i = 0; i < tran.length; i++) {
           profit += (tran[i].originalValue * tran[i].amount) - (this.getCurrentPrice(tran[i].type, 'SEK') * tran[i].amount);
@@ -219,7 +266,7 @@ const APIetcModel = function () {
       }
       return profit;
     }
-    else{
+    else {
       return 0;
     }
   }
@@ -273,7 +320,7 @@ const APIetcModel = function () {
   }
 
 
-  // API Helper methods (copied from lab startup code). Not sure if really needed though.
+// API Helper methods (copied from lab startup code). Not sure if really needed though.
   const processResponse = function (response) {
     if (response.ok) {
       return response.json()
@@ -292,7 +339,7 @@ const APIetcModel = function () {
   }
 
 
-  //Observer pattern
+//Observer pattern
   this.addObserver = function (observer) {
     observers.push(observer);
   };

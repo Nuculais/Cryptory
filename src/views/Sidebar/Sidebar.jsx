@@ -112,18 +112,13 @@ class Sidebar extends React.Component {
         >
           <ListItem
             value={0}
-            primaryText="Profile"
-            leftIcon={<ActionFace/>}
+            primaryText="Wallet"
+            leftIcon={<EditorAttachMoney/>}
           />
           <ListItem
             value={1}
             primaryText="Chatroom"
             leftIcon={<ActionQuestionAnswer/>}
-          />
-          <ListItem
-            value={2}
-            primaryText="Wallet"
-            leftIcon={<EditorAttachMoney/>}
           />
           <ListItem
             value={3}

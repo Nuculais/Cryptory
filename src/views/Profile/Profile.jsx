@@ -17,7 +17,10 @@ const mapStateToProps = (state) => ({
   message: state.message,
   page: state.page,
   username: state.user.username,
-  status: state.status
+  status: state.status,
+  wallet: state.wallet,
+  transactions: state.transactions
+
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -35,6 +38,12 @@ const mapDispatchToProps = (dispatch) => ({
   },
   setChatStatus: status => {
     dispatch(actionCreators.setChatStatus(status))
+  },
+  setTransactionAmount: amount => {
+    dispatch(actionCreators.setTransactionAmount(amount))
+  },
+  setCurrency: fiat => {
+    dispatch(actionCreators.setCurrency(fiat))
   },
   setEndpoint: url => {
     dispatch(actionCreators.setEndpoint(url))
@@ -63,33 +72,63 @@ class Profile extends React.Component {
 
   componentDidMount() {
     this.props.loadProfile(user.data)
+    const name = JSON.parse(user.data)
+    this.setState({
+      username: name,
+      walletValue: modelInstance.getCurrentWalletValue(name),
+      walletChange: modelInstance.getComparison(name),
+      transactions: modelInstance.getData(name, 'transactions'),
+      wallet: modelInstance.getData(name, 'wallet'),
+    });
+   // fetch(`/api/user/${user.data}`).then(response => {
+   //    if (response.ok) {
+   //      response.json().then(data => {
+   //        this.setState({
+   //          wallet: data.wallet,
+   //          transactions: data.transactions,
+   //        });
+   //        console.log('wallet state', this.state)
+   //      })
+   //    } else {
+   //      response.json().then(error => {
+   //        throw(error)
+   //      });
+   //    }
+   //  }).catch(err => {
+   //    throw(err)
+   //  });
+
   }
 
-  newCurr(e) {
+  newCurr = e => {
+    e.preventDefault()
     modelInstance.setCurrentCurr(e.target.value);
     this.setState({currentCurr: e.target.value});
   };
 
-  newAmount(e) {
-    this.setState({transactionamount: e.target.value});
+  newAmount = e => {
+    e.preventDefault()
+    this.setState({transactionAmount: e.target.value});
   };
 
-  newTransaction() {
-    modelInstance.makeNewTransaction(this.state.transactionamount);
+  newTransaction = () => {
+    modelInstance.makeNewTransaction(this.state.username, this.state.transactionAmount);
   };
 
   walletUpdate() {
     this.setState({
-      walletValue: modelInstance.getCurrentWalletValue(),
-      walletChange: modelInstance.getComparison()
+      walletValue: modelInstance.getCurrentWalletValue(this.state.username),
+      walletChange: modelInstance.getComparison(this.state.username),
     });
+
   };
 
   update() {
     this.setState({
       currentCurr: modelInstance.getCurrentCurr(),
-      walletValue: modelInstance.getWallet(),
-      walletChange: modelInstance.getComparison()
+      walletValue: modelInstance.getData(this.state.username, 'wallet'),
+      transactions: modelInstance.getData(this.state.username, 'transactions'),
+      walletChange: modelInstance.getComparison(this.state.username)
     });
   }
 
@@ -103,25 +142,89 @@ class Profile extends React.Component {
         break;
       case 'LOADED':
         profile =
-          <Card style={{height: "50px", marginTop: '25px', backgroundColor: 'rgb(200, 200, 200)'}}>
-            <CardHeader title={'Profile'}/>
-            <CardMedia
-              overlay={<CardTitle
-                title={this.props.profile.user.name ? `Hello, ${this.props.profile.user.name.split(' ')[0]}!` : 'Hello there!'}
-                subtitle={`Member since: ${new Date(this.props.profile.user.created_at).toLocaleString().split(',')[0]}`}/>}
-            >
-              <img src={this.props.profile.user.avatar} height="100%" width="200" alt=""/>
-            </CardMedia>
-            <CardText>
-              At Cryptory, you can manage and keep track of your cryptocurrency holdings, check current prices, and even
-              chat with other members! We also switch to a color scheme at night that's easier on your eyes. Enjoy!
-            </CardText>
-          </Card>
-        chatroom = <Chatroom
-          name={this.props.username}
-        />
+          <div>
+            <Row>
+              <Card>
+                <Row>
+                  <Col xs={4}>
+                    <Card style={{height: "50px", marginTop: '25px', backgroundColor: 'rgb(200, 200, 200)'}}>
+                      <CardHeader title={'Profile'}/>
+                      <CardMedia
+                        overlay={<CardTitle
+                          title={this.props.profile.user.name ? `Hello, ${this.props.profile.user.name.split(' ')[0]}!` : 'Hello there!'}
+                          subtitle={`Member since: ${new Date(this.props.profile.user.created_at).toLocaleString().split(',')[0]}`}/>}
+                      >
+                        <img src={this.props.profile.user.avatar} height="100%" width="200" alt=""/>
+                      </CardMedia>
+                      <CardText>
+                        At Cryptory, you can manage and keep track of your cryptocurrency holdings, check current
+                        prices, and even
+                        chat with other members! We also switch to a color scheme at night that's easier on your eyes.
+                        Enjoy!
+                      </CardText>
+                    </Card>
+                  </Col>
+                  <Col xs={6}>
+                    <Card style={{height: "50px", marginTop: '25px', backgroundColor: 'rgb(200, 200, 200)'}}>
+                      <CardHeader title={'Wallet'}/>
+                      <CardText>
+                        <div className="myWallet">
+                          <form>
+                            <p>Total value of all cryptocurrencies in wallet: {this.state.walletValue} Euro</p>
+                            <p>Earnings/Losses: {this.state.walletChange} Euro</p>
+                            <br/>
+                            <label>
+                              Select currency:
+                            </label>
+                            <select onChange={this.newCurr}>
+                              <option value='BTC'>Bitcoin</option>
+                              <option value='ETH'>Ethereum</option>
+                              <option value='DOGE'>Dogecoin</option>
+                              <option value='XRP'>Ripple</option>
+                              <option value='ADA'>Cardano</option>
+                              <option value='TRX'>Tron</option>
+                              <option value='XVG'>Verge</option>
+                              <option value='LTC'>Litecoin</option>
+                              <option value='EOS'>EOS</option>
+                              <option value='NEO'>NEO</option>
+                            </select>
+                            <p>Selected currency: {this.state.currentCurr}</p>
+                            <h3>Add new transaction</h3>
+                            <label> Amount </label>
+                            <br/>
+                            <label>A positive value if you're buying, negative if you're selling</label>
+                            <br/>
+                            <input id="transactionamount" type="text" onChange={this.newAmount}/>
+                            <br/><br/>
+                            <input type="button" value="Add transaction and update wallet"
+                                   onClick={this.newTransaction}/>
+                            <br/><br/>
+                            <br/><br/>
+                            <br/><br/>
+                            <label> Cryptocurrency: </label>
+                            <input type="text" disabled value="123123"/>
+                            <br/><br/>
+                            <label> Current Amount: </label>
+                            <input type="text"/>
+                            <br/><br/>
+                            <label> Last Updated: </label>
+                            <br/><br/>
+                            <label> History of Purchases: </label>
+                            <br/><br/>
+                            <input type="button" value="Update Wallet to Current Value"/>
+                          </form>
+                        </div>
+                      </CardText>
+                    </Card>
+                  </Col>
+                </Row>
+              </Card>
+            </Row>
+          </div>
+        chatroom = <Chatroom name={this.props.username}/>
         histogram = <Histogram/>
         break
+
       default:
         profile = <em>there was an error loading the profile. please refresh the page!</em>
         chatroom = <em>there was an error loading the chatroom. please refresh the page!</em>
@@ -144,87 +247,34 @@ class Profile extends React.Component {
     }
     return (
       <Row>
-        <Row>
-          <Col xs={12}>
-            <div className="pageLayout">
-              <Row>
-                <Col xs={3}>
-                  <Card>
-                    <div className="navbar" style={{'height': '800px'}}>
-                      <div>
-                        <img src="https://i.imgur.com/s5krUs0.png"
-                          // style={{marginTop: '20px', marginBottom: '20px'}}/>
-                             style={styles.image}/>
+        <Col xs={12}>
+          <div className="pageLayout">
+            <Row>
+              <Col xs={2}>
+                <Card>
+                  <div className="navbar" style={{'height': '800px'}}>
+                    <div>
+                      <img src="https://i.imgur.com/s5krUs0.png"
+                        // style={{marginTop: '20px', marginBottom: '20px'}}/>
+                           style={styles.image}/>
 
-                      </div>
-                      <Divider/>
-                      <div>
-                        <Sidebar name={this.props.name} username={this.props.username}
-                                 avatar={this.props.profile.user.avatar}/>
-                      </div>
                     </div>
-                  </Card>
-                </Col>
-                <Col xs={6}>
+                    <Divider/>
+                    <div>
+                      <Sidebar name={this.props.name} username={this.props.username}
+                               avatar={this.props.profile.user.avatar}/>
+                    </div>
+                  </div>
+                </Card>
+              </Col>
+              <Col xs={10}>
+                <Row>
                   {page}
-                  {this.props.page === 'wallet' ?
-                    <Card style={{height: "50px", marginTop: '25px', backgroundColor: 'rgb(200, 200, 200)'}}>
-                      <CardHeader title={'Wallet'}/>
-                      <div className="myWallet">
-                        <form>
-                          <p>Total value of all cryptocurrencies in wallet: {this.state.walletValue} Euro</p>
-                          <p>Earnings/Losses: {this.state.walletChange} Euro</p>
-                          <br/>
-
-                          <label>
-                            Select currency:
-                          </label>
-                          <select onChange={this.newCurr}>
-                            <option value='BTC'>Bitcoin</option>
-                            <option value='ETH'>Ethereum</option>
-                            <option value='DOGE'>Dogecoin</option>
-                            <option value='XRP'>Ripple</option>
-                            <option value='ADA'>Cardano</option>
-                            <option value='TRX'>Tron</option>
-                            <option value='XVG'>Verge</option>
-                            <option value='LTC'>Litecoin</option>
-                            <option value='EOS'>EOS</option>
-                            <option value='NEO'>NEO</option>
-                          </select>
-                          <p>Selected currency: {this.state.currentCurr}</p>
-                          <h3>Add new transaction</h3>
-                          <label> Amount </label>
-                          <br/>
-                          <label>A positive value if you're buying, negative if you're selling</label>
-                          <br/>
-                          <input id="transactionamount" type="text" onChange={this.newAmount}/>
-                          <br/><br/>
-                          <input type="button" value="Add transaction and update wallet" onClick={this.newTransaction}/>
-
-                          <br/><br/>
-                          <br/><br/>
-                          <br/><br/>
-
-                          <label> Cryptocurrency: </label>
-                          <input type="text" disabled value="123123"/>
-                          <br/><br/>
-                          <label> Current Amount: </label>
-                          <input type="text"/>
-                          <br/><br/>
-                          <label> Last Updated: </label>
-                          <br/><br/>
-                          <label> History of Purchases: </label>
-                          <br/><br/>
-                          <input type="button" value="Update Wallet to Current Value"/>
-                        </form>
-                      </div>
-                    </Card>
-                    : ''}
-                </Col>
-              </Row>
-            </div>
-          </Col>
-        </Row>
+                </Row>
+              </Col>
+            </Row>
+          </div>
+        </Col>
       </Row>
     );
   }

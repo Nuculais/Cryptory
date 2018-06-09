@@ -12,12 +12,12 @@ const User = require('./model/User')
 const Coin = require('./model/Coin')
 const Chats = require('./model/Chats')
 const mongoose = require('mongoose')
-const uri = `mongodb://${encodeURIComponent('cryptoryadmin')}:${encodeURIComponent('cryptory123456789')}@ds247569.mlab.com:47569/heroku_d783vzs7`
-const db = mongoose.connect(uri);
-// mongoose.connect('mongodb://localhost:27017/cryptory');
+// const uri = `mongodb://${encodeURIComponent('cryptoryadmin')}:${encodeURIComponent('cryptory123456789')}@ds247569.mlab.com:47569/heroku_d783vzs7`
+// const db = mongoose.connect(uri);
+mongoose.connect('mongodb://localhost:27017/cryptory');
 // const db = mongoose.connection
 // logging
-// mongoose.set('debug', true);
+mongoose.set('debug', true);
 mongoose.Promise = global.Promise;
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
@@ -41,6 +41,11 @@ passport.deserializeUser(function (user, cb) {
 
 // express
 const app = express();
+
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+app.use(bodyParser.json());
 
 // Configure view engine to render EJS templates.
 app.set('views', __dirname + '/views');
@@ -87,7 +92,6 @@ app.get('/logout',
 app.get('/profile',
   require('connect-ensure-login').ensureLoggedIn(),
   function (req, res) {
-    // console.log('\n\n\nprofile call API', req.user, '\n\n\n')
     res.render('profile', {user: req.user.username});
   });
 
@@ -127,6 +131,7 @@ app.get('/api/user/:username', (req, res) => {
           res.send(err);
           return;
         }
+        console.log('api get user', obj)
         res.json(obj);
       });
 });
@@ -162,96 +167,59 @@ app.get('/home/:id',
     res.render('home', {user: req.user.id});
   });
 
-// app.get('/api/user/:id', async function (ctx) {
-// console.log('here')
-// // Find Todo based on id, then toggle done on/off
-// // const id = ctx.params.id
-// const profile = await User.find({})
-// // coin.done = !coin.done
-// ctx.body = profile
-//   console.log(ctx.body)
+app.put('/api/transactions/:user', async (req, res) => {
+  let user, transactions
+  try {
+    user = JSON.parse(req.params.user)
+    transactions = req.body.transactions
+    const searchQuery = {
+      username: user
+    };
+    const updates = {
+      transactions: transactions
+    };
+    const options = {
+      new: true
+    }
+    User.findOneAndUpdate(searchQuery, {$push: updates}, options, async (err, user) => {
+      try {
+        user.save()
+        res.sendStatus(200)
+      } catch (err) {
+        res.status(422).json({message: 'error saving to database ' + err})
+      }
+    })
+  } catch (error) {
+    res.status(500).json({message: `format: ${error}`});
+  }
+})
 
-// Update todo in database
-// const updatedCoin = await coin.save()
-// ctx.body = updatedCoin
-
-
-// (req, res) => {
-// require('connect-ensure-login').ensureLoggedIn()
-// console.error('req', req.id)
-// User.findOne(req.id,
-//   function (err, obj) {
-//     if (err) {
-//       res.send(err);
-//       return;
-//     }
-//     // res.json(res)
-//     res.json({data: obj});
-//   });
-// res.json(res)
-// db.collection('issues').find().toArray().then(issues => {
-//   const metadata = {total_count: issues.length};
-//   res.json({_metadata: metadata, records: issues})
-// }).catch(error => {
-//   console.log(error);
-//   res.status(500).json({message: `Internal Server Error: ${error}`});
-// });
-// })
-// ;
-
-app.get('/api/coin', (req, res) => {
-  require('connect-ensure-login').ensureLoggedIn(),
-    // console.error('req', req.id)
-    Coin.findOne({name: 'coins'},
-      function (err, obj) {
-        if (err) {
-          res.send(err);
-          return;
-        }
-        // res.json(res)
-        res.json({info: obj});
-      });
-
-});
-// app.get('/api/profile', function(req, res) {
-//   User.find({}).then(eachOne => {
-//     res.json(eachOne);
-//   })
-// })
-
-// app.post('profile',
-//   require('connect-ensure-login').ensureLoggedIn(),
-//   function (req, res) {
-//     User.findByIdAndUpdate(req.user.id, {
-//       $set: {
-//         name: req.body.name,
-//         address: req.body.address,
-//         position: req.body.position,
-//         salary: req.body.salary
-//       }
-//     }, {new: true}, function (err, employee) {
-//       if (err) {
-//         console.log(err);
-//         res.render("../views/employees/edit", {employee: req.body});
-//       }
-//       res.redirect("/profile/" + employee._id);
-//     })
-//   }
-// );
-
-
-// app.use('/dist', serveStatic(config.output.publicPath))
-// //   .use('/static', serveStatic('static', __dirname + '/dist/static'));
-// //
-// app.get('*', (req, res) => {
-//   res
-//     .status(200)
-//     .render('index', '/dist',
-//     );
-// });
-
-// const feed = require('./server/feed');
-
+app.put('/api/wallet/:user', async (req, res) => {
+  let user, wallet
+  try {
+    user = JSON.parse(req.params.user)
+    wallet = req.body.wallet
+    const searchQuery = {
+      username: user
+    };
+    const updates = {
+      wallet: wallet
+    };
+    const options = {
+      new: true
+    }
+    User.findOneAndUpdate(searchQuery, {$push: updates}, options, async (err, user) => {
+      try {
+        user.save()
+        res.sendStatus(200)
+      } catch (err) {
+        res.status(422).json({message: 'error saving to database ' + err})
+      }
+    })
+  } catch (error) {
+    res.status(500).json({message: `format: ${error}`});
+  }
+})
 
 app.get("/chats", (req, res) => {
   Chats.find({}, (error, chats) => {

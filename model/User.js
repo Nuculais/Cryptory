@@ -6,7 +6,8 @@ const mongoose = require('mongoose')
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    default: ''},
+    default: ''
+  },
   someId: {
     type: String,
     default: ''
@@ -34,10 +35,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  following: {
-    type: Array,
-    default: ''
-  },
   github: String,
   profile: {
     name: {type: String, default: ''},
@@ -46,16 +43,15 @@ const userSchema = new mongoose.Schema({
     website: {type: String, default: ''},
     picture: {type: String, default: ''}
   },
-
   wallet: {
     type: Array,
-    default: ''
+    default: []
   },
-  transaction: {
+  transactions: {
     type: Array,
-    default: ''
+    default: []
   }
 });
 
-module.exports = mongoose.model('User', userSchema)
+module.exports = mongoose.model('Account', userSchema)
 

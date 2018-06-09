@@ -1,5 +1,6 @@
 const express = require('express');
 const helmet = require('helmet');
+const bodyParser = require('body-parser');
 
 // mongo
 const mongoose = require('mongoose');
@@ -29,6 +30,12 @@ passport.deserializeUser(function (user, cb) {
 
 // express
 const app = express();
+
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+app.use(bodyParser.json());
+
 // Configure view engine to render EJS templates.
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
@@ -117,6 +124,60 @@ app.get('/api/user/:username', (req, res) => {
       });
 });
 
+app.put('/api/transactions/:user', async (req, res) => {
+  let user, transactions
+  try {
+    user = JSON.parse(req.params.user)
+    transactions = req.body.transactions
+    const searchQuery = {
+      username: user
+    };
+    const updates = {
+      transactions: transactions
+    };
+    const options = {
+      new: true
+    }
+    User.findOneAndUpdate(searchQuery, {$push: updates}, options, async (err, user) => {
+      try {
+        user.save()
+        res.sendStatus(200)
+      } catch (err) {
+        res.status(422).json({message: 'error saving to database ' + err})
+      }
+    })
+  } catch (error) {
+    res.status(500).json({message: `format: ${error}`});
+  }
+})
+
+app.put('/api/wallet/:user', async (req, res) => {
+  let user, wallet
+  try {
+    user = JSON.parse(req.params.user)
+    wallet = req.body.wallet
+    const searchQuery = {
+      username: user
+    };
+    const updates = {
+      wallet: wallet
+    };
+    const options = {
+      new: true
+    }
+    User.findOneAndUpdate(searchQuery, {$push: updates}, options, async (err, user) => {
+      try {
+        user.save()
+        res.sendStatus(200)
+      } catch (err) {
+        res.status(422).json({message: 'error saving to database ' + err})
+      }
+    })
+  } catch (error) {
+    res.status(500).json({message: `format: ${error}`});
+  }
+})
+
 app.get('/chats', (req, res) => {
   Chats.find({}, (error, chats) => {
     if (error) {
@@ -147,7 +208,6 @@ const server = app.listen(port, function () {
 const io = require('socket.io').listen(server);
 
 io.on('connection', socket => {
-  console.log('\n\n\n\nUser connected. Socket id', socket.id, '\n\n\n\n\n\n');
   socket.on('SEND_MESSAGE', function (data) {
     io.emit('RECEIVE_MESSAGE', data);
   })
