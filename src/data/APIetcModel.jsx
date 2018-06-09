@@ -7,12 +7,12 @@ const APIetcModel = function () {
 
   //Addendum: The API requires Unix timestamps
   let observers = [];
-  let currentCurr = 'BTC'; //used when showing data about a selected currency in the  histogram view
-  let Wallet = [];
-  let Transactions = [];
-  let HistogramData;
+  //let currentCurr = 'BTC'; //used when showing data about a selected currency in the  histogram view
+  //let Wallet = [];
+  //let Transactions = [];
+  //let HistogramData;
 
-  //Type and amount of currency bought. This is what gets stored in the wallet.
+ /* //Type and amount of currency bought. This is what gets stored in the wallet.
   this.Currency = {
     type: "",
     amount: 0
@@ -23,7 +23,7 @@ const APIetcModel = function () {
     type: "",
     amount: 0,
     originalValue: 0 //What that amount cost when buying. In euro.
-  };
+  };*/
 
   //Converts a date to a unix timestamp. Example: year=2017, month=08, day=16 will be 1502841600. Must be in that format.
   this.getUnixTime = function (year, month, day) {
@@ -60,13 +60,16 @@ const APIetcModel = function () {
 
   this.makeNewTransaction = function (id, am) {
     let tra = Object.create(Transaction);
+    let curr = this.getCurrentCurr();
 
-    tra.date = Date.now();//needs to be a unix timestamp.
+    tra.date = Date.now(); //needs to be a unix timestamp.
     tra.type = this.getCurrentCurr();
     tra.amount = am;
-    tra.originalValue = (this.getCurrentPrice(this.getCurrentCurr()) * am);
+    let ori = (curr*am);
+    tra.originalValue = (this.getCurrentPrice(ori));
 
-    this.addToWallet(this.getCurrentCurr(), am);
+    
+    this.addToWallet(curr, am);
     Transactions.push(tra);
     this.pushData(id, Transactions, 'transactions')
     alert("Transaction registered!");
@@ -75,7 +78,7 @@ const APIetcModel = function () {
 
   //Adds or subtracts bought currency from the wallet.
   this.addToWallet = function (id, amount) {
-    //curr is a Currency object from a recent transaction. curr.amount can be negative (indicating selling, positive indicating buying)
+    //amount is a Currency object from a recent transaction. curr.amount can be negative (indicating selling, positive indicating buying)
     let coin = this.getCurrentCurr();
 
     for (let i = 0; i < Wallet.length; i++) {

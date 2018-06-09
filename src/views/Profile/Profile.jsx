@@ -211,7 +211,7 @@ class Profile extends React.Component {
                             <br/><br/>
                             <label> History of Purchases: </label>
                             <br/><br/>
-                            <input type="button" value="Update Wallet to Current Value"/>
+                            <input type="button" value="Update Wallet to Current Value" onClick={this.walletUpdate}/>
                           </form>
                         </div>
                       </CardText>
