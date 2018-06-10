@@ -7,12 +7,12 @@ const APIetcModel = function () {
 
   //Addendum: The API requires Unix timestamps
   let observers = [];
-  //let currentCurr = 'BTC'; //used when showing data about a selected currency in the  histogram view
-  //let Wallet = [];
-  //let Transactions = [];
-  //let HistogramData;
+  let currentCurr = 'BTC'; //used when showing data about a selected currency in the  histogram view
+  let Wallet = [];
+  let Transactions = [];
+  let HistogramData;
 
- /* //Type and amount of currency bought. This is what gets stored in the wallet.
+  //Type and amount of currency bought. This is what gets stored in the wallet.
   this.Currency = {
     type: "",
     amount: 0
@@ -23,7 +23,7 @@ const APIetcModel = function () {
     type: "",
     amount: 0,
     originalValue: 0 //What that amount cost when buying. In euro.
-  };*/
+  };
 
   //Converts a date to a unix timestamp. Example: year=2017, month=08, day=16 will be 1502841600. Must be in that format.
   this.getUnixTime = function (year, month, day) {
@@ -78,20 +78,31 @@ const APIetcModel = function () {
 
   //Adds or subtracts bought currency from the wallet.
   this.addToWallet = function (id, amount) {
-    //amount is a Currency object from a recent transaction. curr.amount can be negative (indicating selling, positive indicating buying)
-    let coin = this.getCurrentCurr();
 
-    for (let i = 0; i < Wallet.length; i++) {
-      if (Wallet[i].type === coin) {
-        Wallet[i].amount += amount;
+    console.log(id+" "+amount);
+    let coin = this.getCurrentCurr();
+    this.getData(id, 'wallet')
+    let wallet = Wallet;
+
+    if(wallet.length > 0){
+    for (let i = 0; i < wallet.length; i++) {
+      if (wallet[i].type === coin) {
+        wallet[i].amount += amount;
       }
       else {
         let newcurr = getCurrency(coin, amount);
-        this.Wallet.push(newcurr);
+        wallet.push(newcurr);
       }
-      this.pushData(id, Wallet, 'wallet')
-      notifyObservers();
     }
+  
+/*  else {
+    let newcurr = getCurrency(coin, amount);
+    wallet.push(newcurr);
+  }*/
+  
+      this.pushData(id, wallet, 'wallet')
+      notifyObservers();
+}
   }
 
   this.pushData = (id, val, type) => {
@@ -147,20 +158,23 @@ const APIetcModel = function () {
   this.getCurrentWalletValue = function (id) {
     this.getData(id, 'wallet')
     const totalwallet = Wallet;
+    console.log("This should print the first element of the wallet: " + totalwallet[0]); //prints undefined
     let currenttotal = 0;
 
-    if (Wallet.length > 0) {
+    if (totalwallet.length > 0) {
       for (let c = 0; c < totalwallet.length; c++) {
         let currCost = this.getCurrentPrice(totalwallet[c].type);
         let usertot = currCost * totalwallet[c].amount;
         currenttotal += usertot;
-      }
+        console.log(currenttotal);
+      }}
       return currenttotal;
-    }
-    else {
-      return 0;
-
-    }
+      
+  //  }
+   // else {
+   //   console.log("If this prints, it thinks the wallet is empty.")
+   //   return currenttotal;   
+  //  }
   }
 
 //Prepares data for display in the histogram view
@@ -185,7 +199,7 @@ const APIetcModel = function () {
       if (slidervalue === 2) { //week
         for (let i = 0; i < Data.length; i++) {
           //x = 'Day '+i, y=Data[i].close
-          elem = {x: 'Day ' + i, y: Data[i].close}; //Can this be done? (Viktor says yes)
+          elem = {x: 'Day ' + i, y: Data[i].close};
           historesult.push(elem);
         }
       }
@@ -219,6 +233,7 @@ const APIetcModel = function () {
 //Gets the current price for a particular type or types of currency
   this.getCurrentPrice = function (curr) {
     //Current price of the chosen coin. Calls price. In euro.
+    console.log("This should print a currency symbol: " + curr); //It prints NaN. Skitjävlahelvete.
     let url = 'https://min-api.cryptocompare.com/data/price?fsym=' + curr + '&tsyms=EUR';
 
     return (fetch(url)
