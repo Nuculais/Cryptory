@@ -13,7 +13,7 @@ const APIetcModel = function () {
   let HistogramData;
 
   //Type and amount of currency bought. This is what gets stored in the wallet.
-  this.Currency = {
+  let Currency = {
     type: "",
     amount: 0
   };
@@ -88,21 +88,23 @@ const APIetcModel = function () {
     for (let i = 0; i < wallet.length; i++) {
       if (wallet[i].type === coin) {
         wallet[i].amount += amount;
+        this.pushData(id, wallet, 'wallet')
       }
-      else {
+      /*else {
         let newcurr = getCurrency(coin, amount);
         wallet.push(newcurr);
-      }
-    }
+      }*/
+    }}
   
-/*  else {
-    let newcurr = getCurrency(coin, amount);
+  else {
+    let newcurr = this.getCurrency(coin, amount);
     wallet.push(newcurr);
-  }*/
+    this.pushData(id, Wallet, 'wallet')
+  }
   
-      this.pushData(id, wallet, 'wallet')
+      //this.pushData(id, wallet, 'wallet')
       notifyObservers();
-}
+
   }
 
   this.pushData = (id, val, type) => {
@@ -166,9 +168,13 @@ const APIetcModel = function () {
         let currCost = this.getCurrentPrice(totalwallet[c].type);
         let usertot = currCost * totalwallet[c].amount;
         currenttotal += usertot;
-        console.log(currenttotal);
-      }}
-      return currenttotal;
+        console.log(currenttotal);       
+      }
+    return currenttotal}
+      else{
+        return 0;
+        console.log("If this prints, wallet is empty");
+      }
       
   //  }
    // else {
@@ -338,7 +344,7 @@ const APIetcModel = function () {
   }
 
 
-// API Helper methods (copied from lab startup code). Not sure if really needed though.
+// API Helper methods (copied from lab startup code)
   const processResponse = function (response) {
     if (response.ok) {
       return response.json()
