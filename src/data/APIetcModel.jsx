@@ -51,11 +51,12 @@ const APIetcModel = function () {
 
 
   this.getCurrency = function (ty, am) {
-    let curr = Object.create(Currency);
+
+    let curr = Object.create(Currency); //Notfuckingglobalohmygod
     curr.type = ty;
     curr.amount = am;
 
-    return curr;
+    return curr; //This returns what it should
   }
 
   this.makeNewTransaction = function (id, am) {
@@ -73,22 +74,21 @@ const APIetcModel = function () {
     Transactions.push(tra);
     this.pushData(id, Transactions, 'transactions')
     alert("Transaction registered!");
-    console.log(Transactions[0]);
+    console.log("This is the first transaction: " + Transactions[0]);
   }
 
   //Adds or subtracts bought currency from the wallet.
   this.addToWallet = function (id, amount) {
 
-    console.log(id+" "+amount);
     let coin = this.getCurrentCurr();
     this.getData(id, 'wallet')
     let wallet = Wallet;
 
     if(wallet.length > 0){
     for (let i = 0; i < wallet.length; i++) {
-      if (wallet[i].type === coin) {
+      if (wallet[i].type == id) {
         wallet[i].amount += amount;
-        this.pushData(id, wallet, 'wallet')
+        //this.pushData(id, wallet, 'wallet')
       }
       /*else {
         let newcurr = getCurrency(coin, amount);
@@ -97,12 +97,16 @@ const APIetcModel = function () {
     }}
   
   else {
-    let newcurr = this.getCurrency(coin, amount);
+    let newcurr = this.getCurrency(id, amount);
+
     wallet.push(newcurr);
-    this.pushData(id, Wallet, 'wallet')
+    console.log("This is the newly created currency object: " + JSON.stringify(newcurr));
+
+    //this.pushData(id, Wallet, 'wallet')
   }
   
-      //this.pushData(id, wallet, 'wallet')
+      this.pushData(id, wallet, 'wallet')
+      console.log("First element of the wallet: "+ Wallet[0]);
       notifyObservers();
 
   }
@@ -139,8 +143,9 @@ const APIetcModel = function () {
           fetch(url).then(response => {
             if (response.ok) {
               response.json().then(data => {
-                console.log('getData data', data)
-                obj = data.type
+                //
+                //console.log('getData data', data)
+                obj = data.type //This is null
               })
             }
           })
@@ -239,7 +244,7 @@ const APIetcModel = function () {
 //Gets the current price for a particular type or types of currency
   this.getCurrentPrice = function (curr) {
     //Current price of the chosen coin. Calls price. In euro.
-    console.log("This should print a currency symbol: " + curr); //It prints NaN. Skitjävlahelvete.
+    console.log("This should print a currency symbol: " + JSON.stringify(curr)); //It prints null
     let url = 'https://min-api.cryptocompare.com/data/price?fsym=' + curr + '&tsyms=EUR';
 
     return (fetch(url)
